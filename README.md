@@ -17,11 +17,11 @@ Experience the scanner in action without any local setup:
 
 ### 🖥️ Main Dashboard
 ![Dashboard](https://github.com/Samarth1416/ai-web-vuln-scanner/blob/c83251ef10da67960d8ea6433d8463223643cb38/Screenshot%202026-04-07%20195033.png))
-*A high-level overview of security posture and recent scan history.*
+**A high-level overview of security posture and recent scan history.*
 
 ### 📡 Real-Time Scanning
 ![Scanning](https://github.com/Samarth1416/ai-web-vuln-scanner/blob/87bb6f3be73323450d724fdc1b40c45bd2d333c8/Screenshot%202026-04-07%20195011.png)
-*Live telemetry feed showing active vulnerability detection via Server-Sent Events (SSE).*
+**Live telemetry feed showing active vulnerability detection via Server-Sent Events (SSE).*
 
 ---
 
