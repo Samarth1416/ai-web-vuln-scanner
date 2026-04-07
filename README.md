@@ -1,27 +1,63 @@
 # CyberScan AI 🛡️
+### *Intelligence-Driven Web Vulnerability Assessment*
 
-CyberScan AI is an intelligent, Python-based web vulnerability scanner designed to detect security flaws in web applications. It uses advanced scanning techniques combined with machine learning classification to identify vulnerabilities such as SQL Injection (SQLi), Cross-Site Scripting (XSS), missing security headers, and more.
+**CyberScan AI** is an advanced, Python-powered security auditing platform designed to bridge the gap between automated scanning and actionable intelligence. By leveraging asynchronous processing and machine learning classification, it provides real-time insights into web application security postures.
 
-## ✨ Features
-- **Automated Scanning:** Crawl and scan entire target applications for vulnerabilities.
-- **Background Processes:** Scans are executed dynamically in non-blocking threads.
-- **Live Streamed Results:** View your scanning progress in real-time via Server-Sent Events (SSE).
-- **Vulnerability Classification:** Scans are graded based on severity (Critical, High, Medium, Low, Info) using integrated analysis.
-- **Detailed PDF/JSON Reports:** Export your scan results into professional formats.
-- **User Dashboard:** Secure user authentication with an integrated SQLite database to maintain scan history.
+---
+
+## 🔗 Live Demo
+Experience the scanner in action without any local setup:
+
+> **[Launch CyberScan AI Live](https://cyberscan-ai-dtql.onrender.com/)**  
+> *(Note: The initial load may take ~50 seconds as the Render free-tier instance wakes up.)*
+
+---
+
+## 📸 Screenshots
+
+### 🖥️ Main Dashboard
+![Dashboard](https://github.com/YourUsername/cyberscan-ai/raw/main/screenshots/dashboard.png)
+*A high-level overview of security posture and recent scan history.*
+
+### 📡 Real-Time Scanning
+![Scanning](https://github.com/YourUsername/cyberscan-ai/raw/main/screenshots/scanning.png)
+*Live telemetry feed showing active vulnerability detection via Server-Sent Events (SSE).*
+
+---
+
+## ✨ Key Features
+- **Automated Discovery:** Deep-crawling engine that identifies entry points for SQL Injection (SQLi), Cross-Site Scripting (XSS), and security misconfigurations.
+- **AI-Enhanced Classification:** Findings are intelligently graded based on severity (Critical, High, Medium, Low, Info) using integrated analysis.
+- **Non-Blocking Architecture:** Scans are executed in background threads, keeping the UI responsive while performing heavy lifting.
+- **Live Telemetry:** View scanning progress in real-time via Server-Sent Events (SSE)—no manual refreshing required.
+- **Professional Reporting:** Export findings into detailed PDF or JSON reports for stakeholders.
+- **Secure Persistence:** Integrated user authentication and SQLite database to maintain a history of all security audits.
+
+---
+
+## 🛠️ Technical Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Backend** | Python / Flask |
+| **Concurrency** | Threading & SSE (Server-Sent Events) |
+| **Database** | SQLite (SQLAlchemy ORM) |
+| **Frontend** | Jinja2, Bootstrap 5, Modern JavaScript |
+| **Deployment** | Gunicorn / Render |
+
+---
 
 ## 🚀 Local Installation
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.10+
 - Git
 
 ### Setup
-1. Clone the repository:
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/YourUsername/cyberscan-ai.git
+   git clone [https://github.com/YourUsername/cyberscan-ai.git](https://github.com/YourUsername/cyberscan-ai.git)
    cd cyberscan-ai
-   ```
 
 2. Create and activate a Virtual Environment (Recommended):
    ```bash
