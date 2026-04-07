@@ -16,7 +16,7 @@ Experience the scanner in action without any local setup:
 ## 📸 Screenshots
 
 ### 🖥️ Main Dashboard
-![Dashboard](https://github.com/YourUsername/cyberscan-ai/raw/main/screenshots/dashboard.png)
+![Dashboard]([https://github.com/YourUsername/cyberscan-ai/raw/main/screenshots/dashboard.png](https://github.com/Samarth1416/ai-web-vuln-scanner/blob/c83251ef10da67960d8ea6433d8463223643cb38/Screenshot%202026-04-07%20195033.png))
 *A high-level overview of security posture and recent scan history.*
 
 ### 📡 Real-Time Scanning
