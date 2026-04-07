@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% block title %}Tools Hub — CyberScan AI{% endblock %}
+{% block page_title %}Security Tools{% endblock %}
+
+{% block content %}
+<div class="tools-hub">
+
+  <!-- Header banner -->
+  <div class="tools-banner">
+    <div class="tools-banner-icon"><i class="fas fa-toolbox"></i></div>
+    <div>
+      <h2>Security Tools Hub</h2>
+      <p>Standalone utilities to assist with reconnaissance, analysis, and security checks — all in your browser.</p>
+    </div>
+  </div>
+
+  <!-- Tools Grid -->
+  <div class="tools-grid">
+
+    <!-- ① DNS Lookup -->
+    <div class="tool-card" id="tool-dns">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(0,212,255,0.12);color:var(--blue);">
+          <i class="fas fa-earth-americas"></i>
+        </div>
+        <div>
+          <div class="tool-name">DNS Lookup</div>
+          <div class="tool-desc">Query A, AAAA, MX, NS, and TXT records for any domain.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-input-row">
+          <input type="text" id="dnsInput" placeholder="example.com" class="tool-input"/>
+          <select id="dnsType" class="tool-select">
+            <option value="A">A</option>
+            <option value="AAAA">AAAA</option>
+            <option value="MX">MX</option>
+            <option value="NS">NS</option>
+            <option value="TXT">TXT</option>
+          </select>
+          <button class="tool-btn" onclick="dnsLookup()"><i class="fas fa-search"></i> Lookup</button>
+        </div>
+        <div class="tool-result" id="dnsResult" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ② IP Reputation Checker -->
+    <div class="tool-card" id="tool-ip">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(255,71,87,0.1);color:var(--red);">
+          <i class="fas fa-map-pin"></i>
+        </div>
+        <div>
+          <div class="tool-name">IP Reputation & Geo</div>
+          <div class="tool-desc">Check geolocation, ASN, and basic reputation for any IP address.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-input-row">
+          <input type="text" id="ipInput" placeholder="8.8.8.8" class="tool-input"/>
+          <button class="tool-btn" onclick="ipLookup()"><i class="fas fa-magnifying-glass-location"></i> Check</button>
+        </div>
+        <div class="tool-result" id="ipResult" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ③ Password Strength Meter -->
+    <div class="tool-card" id="tool-pw">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(255,211,42,0.12);color:var(--yellow);">
+          <i class="fas fa-lock"></i>
+        </div>
+        <div>
+          <div class="tool-name">Password Strength Meter</div>
+          <div class="tool-desc">Instantly analyse password strength including entropy and pattern detection.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-input-row">
+          <input type="password" id="pwInput" placeholder="Enter a password to test…" class="tool-input" oninput="checkPassword()"/>
+          <button class="tool-btn" type="button" onclick="togglePwVis()"><i class="fas fa-eye" id="pwEyeIcon"></i></button>
+        </div>
+        <div id="pwMeterWrap" style="display:none;">
+          <div class="pw-meter-bar-bg">
+            <div class="pw-meter-bar" id="pwBar"></div>
+          </div>
+          <div class="pw-meter-label" id="pwLabel"></div>
+          <ul class="pw-tips" id="pwTips"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ HTTP Header Inspector -->
+    <div class="tool-card" id="tool-headers">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(0,255,136,0.1);color:var(--green);">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div>
+          <div class="tool-name">HTTP Header Inspector</div>
+          <div class="tool-desc">Fetch and display all HTTP response headers for any URL.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-input-row">
+          <input type="text" id="headerInput" placeholder="https://example.com" class="tool-input"/>
+          <button class="tool-btn" onclick="fetchHeaders()"><i class="fas fa-download"></i> Fetch</button>
+        </div>
+        <div class="tool-result" id="headerResult" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ⑤ Base64 Encoder / Decoder -->
+    <div class="tool-card" id="tool-b64">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(162,0,255,0.1);color:#a855f7;">
+          <i class="fas fa-code"></i>
+        </div>
+        <div>
+          <div class="tool-name">Base64 Encode / Decode</div>
+          <div class="tool-desc">Instantly encode or decode Base64 strings.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <textarea id="b64Input" class="tool-textarea" placeholder="Enter text or Base64 here…" rows="3" oninput="b64Live()"></textarea>
+        <div class="tool-btn-row">
+          <button class="tool-btn" onclick="b64Encode()"><i class="fas fa-lock"></i> Encode</button>
+          <button class="tool-btn secondary" onclick="b64Decode()"><i class="fas fa-unlock"></i> Decode</button>
+          <button class="tool-btn ghost" onclick="b64Clear()"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+        <div class="tool-result" id="b64Result" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ⑥ URL Encoder / Decoder -->
+    <div class="tool-card" id="tool-url">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(255,150,0,0.12);color:var(--orange);">
+          <i class="fas fa-link"></i>
+        </div>
+        <div>
+          <div class="tool-name">URL Encode / Decode</div>
+          <div class="tool-desc">Percent-encode or decode URL strings instantly.</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <textarea id="urlInput" class="tool-textarea" placeholder="Enter URL or encoded string…" rows="3"></textarea>
+        <div class="tool-btn-row">
+          <button class="tool-btn" onclick="urlEncode()"><i class="fas fa-lock"></i> Encode</button>
+          <button class="tool-btn secondary" onclick="urlDecode()"><i class="fas fa-unlock"></i> Decode</button>
+          <button class="tool-btn ghost" onclick="urlClear()"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+        <div class="tool-result" id="urlResult" style="display:none;"></div>
+      </div>
+    </div>
+
+  </div><!-- /.tools-grid -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+/* ─── DNS Lookup ─────────────────────────────── */
+async function dnsLookup() {
+  const host = document.getElementById('dnsInput').value.trim();
+  const type = document.getElementById('dnsType').value;
+  const el   = document.getElementById('dnsResult');
+  if (!host) return;
+  el.style.display = 'block';
+  el.innerHTML = '<span class="tool-loading"><i class="fas fa-spinner fa-spin"></i> Querying DNS…</span>';
+  try {
+    const r = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(host)}&type=${type}`);
+    const d = await r.json();
+    if (d.Answer && d.Answer.length) {
+      el.innerHTML = d.Answer.map(a =>
+        `<div class="dns-row"><span class="dns-type">${type}</span><span class="dns-val">${a.data}</span><span class="dns-ttl">TTL ${a.TTL}s</span></div>`
+      ).join('');
+    } else {
+      el.innerHTML = `<span class="tool-empty">No ${type} records found for <strong>${host}</strong>.</span>`;
+    }
+  } catch(e) {
+    el.innerHTML = `<span class="tool-error"><i class="fas fa-triangle-exclamation"></i> ${e.message}</span>`;
+  }
+}
+
+/* ─── IP Lookup ──────────────────────────────── */
+async function ipLookup() {
+  const ip = document.getElementById('ipInput').value.trim();
+  const el = document.getElementById('ipResult');
+  if (!ip) return;
+  el.style.display = 'block';
+  el.innerHTML = '<span class="tool-loading"><i class="fas fa-spinner fa-spin"></i> Fetching data…</span>';
+  try {
+    const r = await fetch(`https://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,message,country,regionName,city,isp,org,as,query,threat`);
+    const d = await r.json();
+    if (d.status === 'fail') { el.innerHTML = `<span class="tool-error">${d.message}</span>`; return; }
+    el.innerHTML = `
+      <div class="ip-grid">
+        <div class="ip-row"><span class="ip-lbl">IP</span><span class="ip-val">${d.query}</span></div>
+        <div class="ip-row"><span class="ip-lbl">Country</span><span class="ip-val">${d.country}</span></div>
+        <div class="ip-row"><span class="ip-lbl">Region</span><span class="ip-val">${d.regionName}</span></div>
+        <div class="ip-row"><span class="ip-lbl">City</span><span class="ip-val">${d.city}</span></div>
+        <div class="ip-row"><span class="ip-lbl">ISP</span><span class="ip-val">${d.isp}</span></div>
+        <div class="ip-row"><span class="ip-lbl">Org</span><span class="ip-val">${d.org}</span></div>
+        <div class="ip-row"><span class="ip-lbl">ASN</span><span class="ip-val">${d.as}</span></div>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<span class="tool-error"><i class="fas fa-triangle-exclamation"></i> ${e.message}</span>`;
+  }
+}
+
+/* ─── Password Strength ──────────────────────── */
+function togglePwVis() {
+  const inp = document.getElementById('pwInput');
+  const ico = document.getElementById('pwEyeIcon');
+  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'fas fa-eye-slash'; }
+  else { inp.type = 'password'; ico.className = 'fas fa-eye'; }
+}
+
+function checkPassword() {
+  const pw   = document.getElementById('pwInput').value;
+  const wrap = document.getElementById('pwMeterWrap');
+  const bar  = document.getElementById('pwBar');
+  const lbl  = document.getElementById('pwLabel');
+  const tips = document.getElementById('pwTips');
+
+  if (!pw) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  let score = 0;
+  const checks = [];
+
+  if (pw.length >= 8)  score += 20; else checks.push('At least 8 characters');
+  if (pw.length >= 12) score += 10;
+  if (pw.length >= 16) score += 10;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score += 20; else checks.push('Mix uppercase and lowercase letters');
+  if (/[0-9]/.test(pw)) score += 20; else checks.push('Add numbers');
+  if (/[^a-zA-Z0-9]/.test(pw)) score += 20; else checks.push('Add special characters (!@#$%^&*)');
+  if (/(.)\1{2,}/.test(pw)) { score -= 10; checks.push('Avoid repeated characters'); }
+  if (/^(123|abc|password|qwerty)/i.test(pw)) { score -= 20; checks.push('Avoid common patterns'); }
+
+  score = Math.max(0, Math.min(100, score));
+
+  const levels = [
+    { max: 20, label: 'Very Weak',  color: '#ff4757', cls: 'pw-very-weak' },
+    { max: 40, label: 'Weak',       color: '#ff6b6b', cls: 'pw-weak' },
+    { max: 60, label: 'Fair',       color: '#ffd32a', cls: 'pw-fair' },
+    { max: 80, label: 'Strong',     color: '#2ed573', cls: 'pw-strong' },
+    { max: 100,'label': 'Very Strong', color: '#00d4ff', cls: 'pw-very-strong' },
+  ];
+  const lvl = levels.find(l => score <= l.max) || levels[4];
+
+  bar.style.width  = score + '%';
+  bar.style.background = lvl.color;
+  lbl.textContent  = `${lvl.label} (${score}/100)`;
+  lbl.style.color  = lvl.color;
+
+  if (checks.length) {
+    tips.innerHTML = checks.map(c => `<li><i class="fas fa-xmark" style="color:var(--red);"></i> ${c}</li>`).join('');
+  } else {
+    tips.innerHTML = '<li><i class="fas fa-check" style="color:var(--green);"></i> Excellent password!</li>';
+  }
+}
+
+/* ─── HTTP Header Inspector ──────────────────── */
+async function fetchHeaders() {
+  const url  = document.getElementById('headerInput').value.trim();
+  const el   = document.getElementById('headerResult');
+  if (!url) return;
+  el.style.display = 'block';
+  el.innerHTML = '<span class="tool-loading"><i class="fas fa-spinner fa-spin"></i> Fetching headers…</span>';
+  try {
+    const r   = await fetch('/api/fetch-headers', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url})
+    });
+    const d = await r.json();
+    if (d.error) { el.innerHTML = `<span class="tool-error">${d.error}</span>`; return; }
+    const SECURITY_H = ['content-security-policy','strict-transport-security',
+      'x-frame-options','x-content-type-options','referrer-policy',
+      'permissions-policy','x-xss-protection'];
+    el.innerHTML = `<div class="hdr-status">HTTP <span>${d.status}</span></div>` +
+      Object.entries(d.headers).map(([k,v]) => {
+        const important = SECURITY_H.includes(k.toLowerCase());
+        return `<div class="hdr-row ${important?'hdr-important':''}">
+          <span class="hdr-k">${k}</span>
+          <span class="hdr-v">${v}</span>
+        </div>`;
+      }).join('');
+  } catch(e) {
+    el.innerHTML = `<span class="tool-error"><i class="fas fa-triangle-exclamation"></i> ${e.message}</span>`;
+  }
+}
+
+/* ─── Base64 ─────────────────────────────────── */
+function b64Encode() {
+  const txt = document.getElementById('b64Input').value;
+  const el  = document.getElementById('b64Result');
+  el.style.display = 'block';
+  try { el.innerHTML = `<code>${btoa(unescape(encodeURIComponent(txt)))}</code>`; }
+  catch(e) { el.innerHTML = `<span class="tool-error">${e.message}</span>`; }
+}
+function b64Decode() {
+  const txt = document.getElementById('b64Input').value;
+  const el  = document.getElementById('b64Result');
+  el.style.display = 'block';
+  try { el.innerHTML = `<code>${decodeURIComponent(escape(atob(txt.trim())))}</code>`; }
+  catch(e) { el.innerHTML = `<span class="tool-error">Invalid Base64 input.</span>`; }
+}
+function b64Live() { document.getElementById('b64Result').style.display = 'none'; }
+function b64Clear() {
+  document.getElementById('b64Input').value = '';
+  document.getElementById('b64Result').style.display = 'none';
+}
+
+/* ─── URL Encoder ────────────────────────────── */
+function urlEncode() {
+  const txt = document.getElementById('urlInput').value;
+  const el  = document.getElementById('urlResult');
+  el.style.display = 'block';
+  el.innerHTML = `<code>${encodeURIComponent(txt)}</code>`;
+}
+function urlDecode() {
+  const txt = document.getElementById('urlInput').value;
+  const el  = document.getElementById('urlResult');
+  el.style.display = 'block';
+  try { el.innerHTML = `<code>${decodeURIComponent(txt)}</code>`; }
+  catch(e) { el.innerHTML = `<span class="tool-error">Invalid URL-encoded input.</span>`; }
+}
+function urlClear() {
+  document.getElementById('urlInput').value = '';
+  document.getElementById('urlResult').style.display = 'none';
+}
+</script>
+{% endblock %}

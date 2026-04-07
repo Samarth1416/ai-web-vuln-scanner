@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% block title %}How It Works — CyberScan AI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- ══ HERO ══ -->
+  <div class="hiw-hero">
+    <div class="hiw-hero-glow"></div>
+    <div class="hiw-hero-icon"><i class="fas fa-sitemap"></i></div>
+    <div class="section-tag" style="margin-bottom:12px;">Documentation</div>
+    <h1 class="hiw-hero-title">How <span class="hiw-accent">CyberScan AI</span> Works</h1>
+    <p class="hiw-hero-sub">A complete breakdown of the scanning pipeline — from URL input to a structured vulnerability report.</p>
+  </div>
+
+  <!-- ══ PIPELINE STEPS ══ -->
+  <div class="section-header" style="margin-bottom:32px;">
+    <div class="section-tag">Pipeline</div>
+    <h2>The 5-Step Scan Process</h2>
+    <p>Every scan follows this deterministic pipeline, executed in sequence.</p>
+  </div>
+
+  <div class="hiw-steps">
+    {% for num, title, desc, icon, col in [
+      (1, 'Enter Target URL',        'Provide the URL of the web application you want to test. Make sure you have <strong>explicit written permission</strong> from the site owner before scanning any system.',
+          'fas fa-keyboard', 'blue'),
+      (2, 'Payload Injection',       'The scanner appends crafted payloads to the target URL query parameters — SQL strings like <code>\' OR \'1\'=\'1</code> and XSS vectors like <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>.',
+          'fas fa-syringe', 'red'),
+      (3, 'HTTP Request &amp; Response', 'An HTTP GET request is sent to the target with a 10-second timeout. The full response body and headers are captured for multi-layer analysis.',
+          'fas fa-arrows-left-right', 'green'),
+      (4, 'Pattern Matching',        'The response is scanned for database error strings (e.g., <em>mysql_fetch</em>, <em>unclosed quotation mark</em>), XSS reflection, header presence, and server error disclosures.',
+          'fas fa-magnifying-glass-chart', 'yellow'),
+      (5, 'Report Generation',       'Findings are categorised by severity (Critical / High / Medium), enriched with OWASP references, CWE IDs, and remediation advice, then rendered in a structured report.',
+          'fas fa-file-shield', 'blue'),
+    ] %}
+    <div class="hiw-step" style="animation-delay:{{ loop.index * 0.1 }}s;">
+      <div class="hiw-step-left">
+        <div class="hiw-step-num {{ col }}">{{ '%02d' % num }}</div>
+        {% if not loop.last %}<div class="hiw-step-line"></div>{% endif %}
+      </div>
+      <div class="hiw-step-card">
+        <div class="hiw-step-icon {{ col }}"><i class="{{ icon }}"></i></div>
+        <div class="hiw-step-body">
+          <h3>{{ title }}</h3>
+          <p>{{ desc | safe }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ══ ARCHITECTURE ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:32px;">
+    <div class="section-tag">Architecture</div>
+    <h2>System Architecture</h2>
+    <p>How the components connect from your browser to the vulnerability report.</p>
+  </div>
+
+  <div class="hiw-arch-grid">
+    <!-- Flow diagram -->
+    <div class="hiw-arch-flow">
+      {% for step, icon, col, desc in [
+        ('User Browser',       'fas fa-display',   'blue',  'Sends scan request via web form'),
+        ('Flask App (app.py)', 'fas fa-server',    'green', 'Routes request, manages sessions'),
+        ('scanner_engine.py',  'fas fa-cogs',      'green', 'Orchestrates all scan modules'),
+        ('sql_scanner.py',     'fas fa-database',  'red',   'Tests SQL injection payloads'),
+        ('xss_scanner.py',     'fas fa-code',      'yellow','Tests XSS reflection payloads'),
+        ('header_checker.py',  'fas fa-shield-halved','blue','Checks HTTP security headers'),
+        ('Result Page',        'fas fa-file-shield','blue', 'Renders structured report'),
+      ] %}
+      <div class="arch-node">
+        <div class="arch-node-inner">
+          <div class="arch-icon {{ col }}"><i class="{{ icon }}"></i></div>
+          <div class="arch-label">
+            <span class="arch-name">{{ step }}</span>
+            <span class="arch-desc">{{ desc }}</span>
+          </div>
+        </div>
+        {% if not loop.last %}<div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Limitations -->
+    <div class="hiw-right-col">
+      <div class="hiw-card">
+        <div class="hiw-card-header">
+          <div class="hiw-card-icon blue"><i class="fas fa-circle-info"></i></div>
+          <div>
+            <h3>Scanner Limitations</h3>
+            <span class="hiw-card-sub">Know before you scan</span>
+          </div>
+        </div>
+        <div class="hiw-limit-list">
+          {% for item, icon, col in [
+            ('Only GET-based parameters are tested — POST forms are not yet scanned.', 'fas fa-minus-circle', 'red'),
+            ('Does not bypass WAFs or handle JavaScript-rendered content.', 'fas fa-minus-circle', 'red'),
+            ('Error-based detection only — blind/time-based SQLi not yet supported.', 'fas fa-minus-circle', 'orange'),
+            ('No authentication support — cannot scan behind login walls.', 'fas fa-minus-circle', 'orange'),
+            ('False positives possible if errors appear for unrelated reasons.', 'fas fa-minus-circle', 'yellow'),
+          ] %}
+          <div class="hiw-limit-item">
+            <i class="{{ icon }}" style="color:var(--{{ col }});flex-shrink:0;margin-top:2px;"></i>
+            <span>{{ item }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Scan Types -->
+      <div class="hiw-card" style="margin-top:16px;">
+        <div class="hiw-card-header">
+          <div class="hiw-card-icon green"><i class="fas fa-check-double"></i></div>
+          <div>
+            <h3>Detection Methods</h3>
+            <span class="hiw-card-sub">Active detection techniques</span>
+          </div>
+        </div>
+        <div class="hiw-detect-grid">
+          {% for method, icon, col in [
+            ('Error-based SQLi', 'fas fa-database', 'red'),
+            ('XSS Reflection',   'fas fa-code',     'yellow'),
+            ('Header Analysis',  'fas fa-shield-halved','blue'),
+            ('Info Disclosure',  'fas fa-triangle-exclamation','green'),
+          ] %}
+          <div class="hiw-detect-item">
+            <i class="{{ icon }}" style="color:var(--{{ col }});"></i>
+            <span>{{ method }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FAQ ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:32px;">
+    <div class="section-tag">FAQ</div>
+    <h2>Frequently Asked Questions</h2>
+  </div>
+
+  <div class="hiw-faq-grid">
+    {% for q, a, icon in [
+      ('Is this tool legal to use?',
+       'Yes — but ONLY on systems you own or have explicit written permission to test. Unauthorised scanning is illegal in most jurisdictions.',
+       'fas fa-gavel'),
+      ('Why does my scan return no vulnerabilities?',
+       'The target may not be vulnerable, the payload may be filtered by a WAF, or the vulnerability type may fall outside our current detection set.',
+       'fas fa-question-circle'),
+      ('How accurate is the detection?',
+       'Error-based detection is highly reliable for common patterns. However, custom error pages or WAFs can suppress messages, causing false negatives.',
+       'fas fa-bullseye'),
+      ('Can I scan localhost apps?',
+       'Yes! Enter http://127.0.0.1:<port>/path?param=value to scan local development apps. Great for pre-deployment security checks.',
+       'fas fa-laptop-code'),
+      ('What does the severity rating mean?',
+       'Critical = immediate exploitation risk. High = significant exposure. Medium = notable risk requiring attention. Low = minor advisory.',
+       'fas fa-layer-group'),
+      ('Will POST forms ever be supported?',
+       'POST form scanning is on the roadmap. The current version focuses on GET parameters as they are the most common attack surface in simple apps.',
+       'fas fa-road'),
+    ] %}
+    <details class="hiw-faq-item">
+      <summary>
+        <div class="faq-summary-icon"><i class="{{ icon }}"></i></div>
+        <span>{{ q }}</span>
+        <i class="fas fa-chevron-down faq-chevron"></i>
+      </summary>
+      <div class="faq-body">{{ a }}</div>
+    </details>
+    {% endfor %}
+  </div>
+
+  <!-- ══ PRO TIPS ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:32px;">
+    <div class="section-tag">Tips</div>
+    <h2>Pro Tips for Best Results</h2>
+    <p>Get more accurate and useful results from your scans with these best practices.</p>
+  </div>
+
+  <div class="hiw-tips-grid">
+    {% for tip, icon, col, detail in [
+      ('Include query parameters',    'fas fa-link',             'green',
+       'Always use a URL that has parameters — e.g. <code>?id=1</code> or <code>?search=test</code>. The scanner tests those parameter values.'),
+      ('Start with known-vulnerable apps', 'fas fa-flask',      'blue',
+       'Test on DVWA, Juice Shop, or WebGoat first to validate scanner behaviour before targeting real targets.'),
+      ('Check response codes',        'fas fa-server',           'yellow',
+       'A 403 or 429 response during scanning usually means a WAF or rate limiter is blocking payloads.'),
+      ('Use HTTP not HTTPS if possible', 'fas fa-lock-open',    'orange',
+       'HTTPS adds latency and potential cert errors. Local testing over HTTP is faster and more reliable.'),
+      ('Scan before and after a fix', 'fas fa-code-compare',    'green',
+       'Run a baseline scan, apply your fix, then re-scan to confirm the vulnerability no longer triggers.'),
+      ('Report false positives',      'fas fa-flag',             'red',
+       'If you see suspicious results on a clean target, raise an issue on GitHub. Pattern improvements are ongoing.'),
+    ] %}
+    <div class="hiw-tip-card hiw-tip-{{ col }}">
+      <div class="hiw-tip-icon {{ col }}"><i class="{{ icon }}"></i></div>
+      <h4>{{ tip }}</h4>
+      <p>{{ detail | safe }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ══ QUICK REFERENCE ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:24px;">
+    <div class="section-tag">Reference</div>
+    <h2>Quick Reference</h2>
+    <p>At-a-glance comparison of what CyberScan AI can and cannot do.</p>
+  </div>
+
+  <div class="hiw-ref-grid">
+    <div class="hiw-ref-card can">
+      <div class="hiw-ref-header">
+        <i class="fas fa-circle-check"></i>
+        <span>What It <strong>CAN</strong> Do</span>
+      </div>
+      {% for item in [
+        'Test GET-parameter SQL injection',
+        'Test reflected XSS in GET parameters',
+        'Check all major HTTP security headers',
+        'Detect server error information disclosure',
+        'Scan public-facing and localhost applications',
+        'Generate severity-rated reports with CWE IDs',
+        'Provide OWASP-aligned remediation guidance',
+      ] %}
+      <div class="ref-item yes"><i class="fas fa-check"></i>{{ item }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="hiw-ref-card cannot">
+      <div class="hiw-ref-header">
+        <i class="fas fa-circle-xmark"></i>
+        <span>What It <strong>CANNOT</strong> Do</span>
+      </div>
+      {% for item in [
+        'Scan POST forms or JSON API bodies',
+        'Bypass WAF or rate-limiting systems',
+        'Perform blind or time-based SQL injection',
+        'Crawl multi-page sites or sitemaps',
+        'Log in with credentials to scan protected pages',
+        'Execute JavaScript or test DOM-based XSS',
+        'Guarantee zero false positives or negatives',
+      ] %}
+      <div class="ref-item no"><i class="fas fa-times"></i>{{ item }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ══ CTA ══ -->
+  <div class="hiw-cta">
+    <div class="hiw-cta-glow"></div>
+    <div class="hiw-cta-icon"><i class="fas fa-satellite-dish"></i></div>
+    <h3>Ready to Run Your First Scan?</h3>
+    <p>Point CyberScan AI at a target URL and get a full vulnerability report in seconds.</p>
+    <a href="/scan" class="hiw-cta-btn">
+      <i class="fas fa-satellite-dish"></i> Launch Scan
+    </a>
+  </div>
+
+</div>
+
+<style>
+/* ─── Hero ─── */
+.hiw-hero {
+  text-align: center; padding: 52px 20px 40px; position: relative; overflow: hidden;
+  margin-bottom: 32px;
+}
+.hiw-hero-glow {
+  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+  width: 440px; height: 280px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,212,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hiw-hero-icon {
+  width: 68px; height: 68px; border-radius: 20px; margin: 0 auto 18px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(0,255,136,0.1));
+  border: 1px solid rgba(0,212,255,0.25); display: grid; place-items: center;
+  font-size: 30px; color: var(--blue);
+  box-shadow: 0 0 40px rgba(0,212,255,0.15);
+}
+.hiw-hero-title { font-size: clamp(26px, 4vw, 40px); font-weight: 800; color: #fff; margin-bottom: 14px; letter-spacing: -1px; }
+.hiw-accent { color: var(--green); }
+.hiw-hero-sub { font-size: 15px; color: var(--text-muted); line-height: 1.7; max-width: 520px; margin: 0 auto; }
+
+/* ─── Steps ─── */
+.hiw-steps { display: flex; flex-direction: column; gap: 0; max-width: 760px; margin: 0 auto; }
+
+.hiw-step {
+  display: flex; gap: 0; align-items: flex-start;
+  animation: fadeUp 0.5s both;
+}
+.hiw-step-left {
+  display: flex; flex-direction: column; align-items: center; flex-shrink: 0;
+  width: 56px; padding-top: 4px;
+}
+.hiw-step-num {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center; font-size: 14px; font-weight: 800;
+  font-family: var(--mono); flex-shrink: 0;
+}
+.hiw-step-num.blue   { background: rgba(0,212,255,0.12); color: var(--blue); border: 1px solid rgba(0,212,255,0.25); }
+.hiw-step-num.red    { background: rgba(255,71,87,0.12); color: var(--red); border: 1px solid rgba(255,71,87,0.25); }
+.hiw-step-num.green  { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.25); }
+.hiw-step-num.yellow { background: rgba(255,211,42,0.12); color: var(--yellow); border: 1px solid rgba(255,211,42,0.25); }
+
+.hiw-step-line {
+  width: 2px; flex: 1; min-height: 32px;
+  background: linear-gradient(to bottom, var(--border), transparent);
+  margin: 6px 0;
+}
+
+.hiw-step-card {
+  flex: 1; display: flex; gap: 16px; align-items: flex-start;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px 22px; margin-left: 16px; margin-bottom: 16px;
+  transition: var(--transition);
+}
+.hiw-step-card:hover { border-color: var(--border-h); transform: translateX(4px); }
+.hiw-step-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
+}
+.hiw-step-icon.blue   { background: rgba(0,212,255,0.12); color: var(--blue); }
+.hiw-step-icon.red    { background: rgba(255,71,87,0.12); color: var(--red); }
+.hiw-step-icon.green  { background: rgba(0,255,136,0.12); color: var(--green); }
+.hiw-step-icon.yellow { background: rgba(255,211,42,0.12); color: var(--yellow); }
+
+.hiw-step-body h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.hiw-step-body p  { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.hiw-step-body code {
+  color: var(--blue); background: rgba(0,212,255,0.08);
+  padding: 1px 5px; border-radius: 3px; font-size: 12px; font-family: var(--mono);
+}
+.hiw-step-body em { color: var(--yellow); font-style: normal; }
+
+/* ─── Architecture Grid ─── */
+.hiw-arch-grid {
+  display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;
+}
+@media(max-width:860px) { .hiw-arch-grid { grid-template-columns: 1fr; } }
+
+/* Flow */
+.hiw-arch-flow {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; display: flex; flex-direction: column; gap: 0;
+}
+.arch-node { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.arch-node-inner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border);
+  background: rgba(0,0,0,0.2); transition: var(--transition);
+}
+.arch-node-inner:hover { border-color: var(--border-h); }
+.arch-icon {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  display: grid; place-items: center; font-size: 15px;
+}
+.arch-icon.blue   { background: rgba(0,212,255,0.12); color: var(--blue); }
+.arch-icon.green  { background: rgba(0,255,136,0.12); color: var(--green); }
+.arch-icon.red    { background: rgba(255,71,87,0.12); color: var(--red); }
+.arch-icon.yellow { background: rgba(255,211,42,0.12); color: var(--yellow); }
+.arch-name { display: block; font-size: 13px; font-weight: 600; color: #fff; font-family: var(--mono); }
+.arch-desc { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.arch-arrow {
+  display: flex; justify-content: center; padding: 4px 0;
+  color: var(--text-muted); font-size: 11px; opacity: 0.5;
+}
+
+/* Right column cards */
+.hiw-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px;
+}
+.hiw-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.hiw-card-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  display: grid; place-items: center; font-size: 17px;
+}
+.hiw-card-icon.blue  { background: rgba(0,212,255,0.12); color: var(--blue); border: 1px solid rgba(0,212,255,0.2); }
+.hiw-card-icon.green { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+.hiw-card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.hiw-card-sub { font-size: 11px; color: var(--text-muted); }
+
+/* Limits */
+.hiw-limit-list { display: flex; flex-direction: column; gap: 11px; }
+.hiw-limit-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--text-muted); line-height: 1.6;
+}
+
+/* Detection grid */
+.hiw-detect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hiw-detect-item {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; color: var(--text); font-weight: 500;
+  padding: 9px 12px; border-radius: 8px;
+  background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+}
+
+/* ─── FAQ ─── */
+.hiw-faq-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 900px; margin: 0 auto;
+}
+@media(max-width:700px) { .hiw-faq-grid { grid-template-columns: 1fr; } }
+
+.hiw-faq-item {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; transition: var(--transition);
+}
+.hiw-faq-item:hover { border-color: var(--border-h); }
+.hiw-faq-item[open] { border-color: rgba(0,255,136,0.3); }
+.hiw-faq-item summary {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px; cursor: pointer; list-style: none;
+  font-size: 14px; font-weight: 600; color: #fff;
+  user-select: none;
+}
+.hiw-faq-item summary::-webkit-details-marker { display: none; }
+.faq-summary-icon {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.15);
+  display: grid; place-items: center; font-size: 13px; color: var(--green);
+}
+.faq-chevron { margin-left: auto; font-size: 11px; color: var(--text-muted); transition: var(--transition); flex-shrink: 0; }
+.hiw-faq-item[open] .faq-chevron { transform: rotate(180deg); color: var(--green); }
+.hiw-faq-item summary span { flex: 1; }
+.faq-body {
+  padding: 0 18px 18px 64px;
+  font-size: 13px; color: var(--text-muted); line-height: 1.7;
+}
+
+/* ─── Pro Tips ─── */
+.hiw-tips-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+@media(max-width:900px){ .hiw-tips-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:540px){ .hiw-tips-grid { grid-template-columns: 1fr; } }
+
+.hiw-tip-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; transition: var(--transition); position: relative; overflow: hidden;
+}
+.hiw-tip-card:hover { transform: translateY(-3px); border-color: var(--border-h); }
+.hiw-tip-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.hiw-tip-card.hiw-tip-green::after  { background: linear-gradient(90deg, var(--green), transparent); }
+.hiw-tip-card.hiw-tip-blue::after   { background: linear-gradient(90deg, var(--blue), transparent); }
+.hiw-tip-card.hiw-tip-yellow::after { background: linear-gradient(90deg, var(--yellow), transparent); }
+.hiw-tip-card.hiw-tip-orange::after { background: linear-gradient(90deg, var(--orange), transparent); }
+.hiw-tip-card.hiw-tip-red::after    { background: linear-gradient(90deg, var(--red), transparent); }
+.hiw-tip-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: grid; place-items: center; font-size: 18px; margin-bottom: 14px;
+}
+.hiw-tip-icon.green  { background: rgba(0,255,136,0.12); color: var(--green); }
+.hiw-tip-icon.blue   { background: rgba(0,212,255,0.12); color: var(--blue); }
+.hiw-tip-icon.yellow { background: rgba(255,211,42,0.12); color: var(--yellow); }
+.hiw-tip-icon.orange { background: rgba(255,150,0,0.12); color: var(--orange); }
+.hiw-tip-icon.red    { background: rgba(255,71,87,0.12); color: var(--red); }
+.hiw-tip-card h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.hiw-tip-card p { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.hiw-tip-card code { color: var(--blue); background: rgba(0,212,255,0.08); padding: 1px 5px; border-radius: 3px; font-size: 11px; font-family: var(--mono); }
+
+/* ─── Quick Reference ─── */
+.hiw-ref-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto;
+}
+@media(max-width:660px){ .hiw-ref-grid { grid-template-columns: 1fr; } }
+.hiw-ref-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+}
+.hiw-ref-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; font-size: 14px; font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+.hiw-ref-card.can  .hiw-ref-header { background: rgba(0,255,136,0.06); color: var(--green); }
+.hiw-ref-card.cannot .hiw-ref-header { background: rgba(255,71,87,0.06); color: var(--red); }
+.hiw-ref-header strong { color: inherit; }
+.ref-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 18px; font-size: 13px; line-height: 1.5;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.ref-item:last-child { border-bottom: none; }
+.ref-item i { margin-top: 2px; flex-shrink: 0; font-size: 12px; }
+.ref-item.yes { color: var(--text); }
+.ref-item.yes i { color: var(--green); }
+.ref-item.no  { color: var(--text-muted); }
+.ref-item.no  i { color: var(--red); }
+
+/* ─── CTA ─── */
+.hiw-cta {
+  position: relative; overflow: hidden; text-align: center;
+  padding: 52px 32px; margin-top: 64px; margin-bottom: 8px;
+  background: linear-gradient(135deg, rgba(0,255,136,0.05), rgba(0,212,255,0.04));
+  border: 1px solid var(--border); border-radius: 20px;
+}
+.hiw-cta-glow {
+  position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 400px; height: 300px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,255,136,0.08), transparent 70%);
+  pointer-events: none;
+}
+.hiw-cta-icon {
+  width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 20px;
+  background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,212,255,0.1));
+  border: 1px solid var(--border); display: grid; place-items: center;
+  font-size: 28px; color: var(--green);
+  box-shadow: 0 0 40px rgba(0,255,136,0.15);
+  animation: iconPulse 3s ease-in-out infinite;
+}
+.hiw-cta h3 { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+.hiw-cta p  { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
+.hiw-cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 36px; border-radius: 12px; font-size: 15px; font-weight: 700;
+  background: linear-gradient(135deg, var(--green), var(--green-dim));
+  color: var(--bg); text-decoration: none;
+  box-shadow: 0 6px 28px rgba(0,255,136,0.35); transition: var(--transition);
+}
+.hiw-cta-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 44px rgba(0,255,136,0.55); color: var(--bg); }
+
+@media(max-width:700px) {
+  .hiw-arch-grid { grid-template-columns: 1fr!important; }
+  .hiw-step-card { margin-left: 10px; }
+}
+</style>
+{% endblock %}

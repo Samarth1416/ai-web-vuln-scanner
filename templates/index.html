@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}CyberScan AI — Free Web Vulnerability Scanner{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-badge">
+    <i class="fas fa-bolt"></i> AI-Powered Security Testing
+  </div>
+  <h1>Detect Web<br><span class="gradient-text">Vulnerabilities Instantly</span></h1>
+  <p>Scan any URL for SQL Injection, XSS, and other critical vulnerabilities using advanced AI-driven detection techniques.</p>
+
+  <div class="scan-form-wrap">
+    <!-- Scan Form -->
+    <form id="scanForm" action="/scan" method="POST" onsubmit="startScan()">
+      <div class="input-group">
+        <i class="fas fa-globe" style="color:var(--text-muted);margin-left:10px;align-self:center;"></i>
+        <input type="url" id="urlInput" name="url" placeholder="https://example.com/page?id=1" required autocomplete="off"/>
+        <button class="btn btn-primary" type="submit" id="scanBtn">
+          <i class="fas fa-radar"></i> Start Scan
+        </button>
+      </div>
+    </form>
+
+    <!-- Progress (shown while scanning) -->
+    <div class="scan-progress" id="scanProgress">
+      <div class="spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      <p class="progress-label" id="progressLabel">Initialising scan engine...</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-muted);margin-top:14px;">
+      <i class="fas fa-lock" style="color:var(--green);"></i>
+      Only scan websites you own or have explicit permission to test.
+    </p>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="container" style="padding-top:0;">
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-number" data-target="1200">0</span>
+      <div class="stat-label">Scans Completed</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-target="4">0</span>
+      <div class="stat-label">Vulnerability Types</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-target="98">0</span>
+      <div class="stat-label">Detection Accuracy %</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-target="3">0</span>
+      <div class="stat-label">Avg Scan Time (sec)</div>
+    </div>
+  </div>
+
+  <!-- How It Works Flow -->
+  <div class="section-header" style="margin-top:40px;">
+    <div class="section-tag">How It Works</div>
+    <h2>CyberScan Automation Flow</h2>
+    <p>A completely automated pipeline from URL input to final vulnerability report.</p>
+  </div>
+
+  <div class="about-scan-card" style="margin-top:20px; border:none; background:transparent; padding:0;">
+    <div class="scan-flow" style="margin-bottom:0;">
+      <div class="flow-step" style="--d:0s">
+        <div class="flow-icon" style="background:rgba(0,212,255,0.12);color:var(--blue);">
+          <i class="fas fa-globe"></i>
+        </div>
+        <div class="flow-label">Target Input</div>
+        <div class="flow-desc">URL parsed &amp; validated. Protocol normalised.</div>
+      </div>
+      <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="flow-step" style="--d:0.1s">
+        <div class="flow-icon" style="background:rgba(0,255,136,0.1);color:var(--green);">
+          <i class="fas fa-magnifying-glass"></i>
+        </div>
+        <div class="flow-label">Recon &amp; Crawl</div>
+        <div class="flow-desc">Headers fetched. Query parameters extracted for testing.</div>
+      </div>
+      <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="flow-step" style="--d:0.2s">
+        <div class="flow-icon" style="background:rgba(255,150,0,0.12);color:var(--orange);">
+          <i class="fas fa-vials"></i>
+        </div>
+        <div class="flow-label">Module Testing</div>
+        <div class="flow-desc">SQLi, XSS, Open Redirect &amp; Header checks run in parallel.</div>
+      </div>
+      <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="flow-step" style="--d:0.3s">
+        <div class="flow-icon" style="background:rgba(255,71,87,0.1);color:var(--red);">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="flow-label">AI Classification</div>
+        <div class="flow-desc">Each finding is ranked Critical → Info by severity engine.</div>
+      </div>
+      <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="flow-step" style="--d:0.4s">
+        <div class="flow-icon" style="background:rgba(255,211,42,0.1);color:var(--yellow);">
+          <i class="fas fa-file-shield"></i>
+        </div>
+        <div class="flow-label">Report</div>
+        <div class="flow-desc">Findings sorted by severity. PDF &amp; JSON export available.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="section-header" style="margin-top:60px;">
+    <div class="section-tag">What We Detect</div>
+    <h2>Comprehensive Security Coverage</h2>
+    <p>Our scanner checks for the most critical OWASP Top 10 vulnerabilities automatically.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon red"><i class="fas fa-database"></i></div>
+      <h3>SQL Injection</h3>
+      <p>Detects classic and boolean-based SQL injection by analysing server error responses and abnormal data returns.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon yellow"><i class="fas fa-code"></i></div>
+      <h3>Cross-Site Scripting (XSS)</h3>
+      <p>Tests input fields for reflected XSS by injecting script payloads and verifying if they appear in the response.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon blue"><i class="fas fa-network-wired"></i></div>
+      <h3>Header Analysis</h3>
+      <p>Checks for missing security headers like CSP, X-Frame-Options, and HSTS that leave sites exposed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon green"><i class="fas fa-file-shield"></i></div>
+      <h3>Detailed Reports</h3>
+      <p>Every scan produces a structured report with severity ratings, risk descriptions, and remediation guidance.</p>
+    </div>
+  </div>
+
+  <!-- Warning -->
+  <div class="alert alert-warning" style="margin-top:48px;">
+    <i class="fas fa-triangle-exclamation" style="font-size:20px;flex-shrink:0;"></i>
+    <div>
+      <strong>Legal Disclaimer:</strong> This tool is for <strong>educational purposes</strong> and authorised security testing only.
+      Scanning systems without explicit permission is illegal under the Computer Fraud and Abuse Act (CFAA) and similar laws worldwide.
+    </div>
+  </div>
+</div>
+
+<script>
+function startScan() {
+  const form = document.getElementById('scanForm');
+  const progress = document.getElementById('scanProgress');
+  const btn = document.getElementById('scanBtn');
+  form.querySelector('.input-group').style.display = 'none';
+  progress.classList.add('active');
+  btn.disabled = true;
+  const labels = [
+    'Initialising scan engine...',
+    'Connecting to target...',
+    'Injecting SQL payloads...',
+    'Testing XSS vectors...',
+    'Analysing responses...',
+    'Generating report...'
+  ];
+  let i = 0;
+  const lbl = document.getElementById('progressLabel');
+  const iv = setInterval(() => {
+    if (i < labels.length) { lbl.textContent = labels[i++]; }
+    else clearInterval(iv);
+  }, 800);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CyberScan AI{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Stat Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-satellite-dish"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ total }}</div>
+      <div class="stat-lbl">Total Scans</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-skull-crossbones"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ sev_counts.Critical }}</div>
+      <div class="stat-lbl">Critical Issues</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class="fas fa-triangle-exclamation"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ sev_counts.High }}</div>
+      <div class="stat-lbl">High Severity</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-circle-check"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ sev_counts.get('Info', 0) }}</div>
+      <div class="stat-lbl">Clean Results</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon purple"><i class="fas fa-globe"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ distinct_targets }}</div>
+      <div class="stat-lbl">Targets Scanned</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon darkred"><i class="fas fa-fire"></i></div>
+    <div class="stat-body">
+      <div class="stat-val">{{ high_critical }}</div>
+      <div class="stat-lbl">High + Critical</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="card-header-row">
+      <span><i class="fas fa-chart-pie"></i> Severity Distribution</span>
+    </div>
+    <div style="position:relative;height:220px;">
+      <canvas id="sevChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="card-header-row">
+      <span><i class="fas fa-chart-bar"></i> Vulnerability Types</span>
+    </div>
+    <div style="position:relative;height:220px;">
+      <canvas id="vulnChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Quick action -->
+<div class="quick-scan-banner">
+  <div>
+    <div class="qs-title"><i class="fas fa-bolt"></i> Ready to scan?</div>
+    <div class="qs-sub">Test a target URL for SQL injection, XSS, open redirects, CSRF, SSL issues, header misconfigs and more.</div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <a href="/scan" class="btn-primary-cta">
+      <i class="fas fa-satellite-dish"></i> Launch New Scan
+    </a>
+    <a href="/tools" class="btn-primary-cta" style="background:rgba(0,212,255,0.15);border-color:var(--blue);color:var(--blue);">
+      <i class="fas fa-toolbox"></i> Open Tools Hub
+    </a>
+  </div>
+</div>
+
+<!-- Recent Scans Table -->
+<div class="table-card">
+  <div class="card-header-row">
+    <span><i class="fas fa-clock-rotate-left"></i> Recent Scans</span>
+    <a href="/history" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+  </div>
+  {% if recent %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Target URL</th>
+          <th>Vulnerability</th>
+          <th>Severity</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in recent %}
+        <tr>
+          <td class="mono-cell">{{ s.url[:55] }}{% if s.url|length > 55 %}...{% endif %}</td>
+          <td>{{ s.vulnerability }}</td>
+          <td><span class="sev-badge sev-{{ s.severity|lower }}">{{ s.severity }}</span></td>
+          <td class="date-cell">{{ s.scan_date[:16] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-satellite-dish fa-2x" style="color:var(--text-muted);margin-bottom:12px;display:block;"></i>
+    No scans yet. <a href="/scan">Run your first scan</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/charts.js"></script>
+<script>
+  initDashboardCharts(
+    {{ sev_counts | tojson }},
+    {{ vuln_counts | tojson }}
+  );
+</script>
+{% endblock %}

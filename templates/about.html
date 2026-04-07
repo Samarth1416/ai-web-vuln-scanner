@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+{% block title %}About — CyberScan AI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- ══ HERO ══ -->
+  <div class="about-hero">
+    <div class="about-hero-glow"></div>
+    <div class="about-hero-icon"><i class="fas fa-shield-halved"></i></div>
+    <div class="section-tag" style="margin-bottom:12px;">About Us</div>
+    <h1 class="about-hero-title">Built for Security<br><span class="about-hero-accent">Professionals</span></h1>
+    <p class="about-hero-sub">CyberScan AI is an open-source web vulnerability scanner powered by Python and AI-driven pattern matching — fast, accurate, and free.</p>
+    <div class="about-stat-row">
+      <div class="about-stat">
+        <span class="about-stat-num" data-target="4">0</span>
+        <span class="about-stat-label">Scan Modules</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-num" data-target="100">0</span><span class="about-stat-unit">%</span>
+        <span class="about-stat-label">Open Source</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-num" data-target="10">0</span><span class="about-stat-unit">s</span>
+        <span class="about-stat-label">Scan Timeout</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-num" data-target="4">0</span>
+        <span class="about-stat-label">CWE Types Covered</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MISSION + TECH STACK ══ -->
+  <div class="about-two-col">
+    <div class="about-panel">
+      <div class="about-panel-header">
+        <div class="about-panel-icon green"><i class="fas fa-bullseye"></i></div>
+        <div>
+          <h3>Our Mission</h3>
+          <span class="about-panel-sub">Why we built this</span>
+        </div>
+      </div>
+      <p class="about-panel-body">To make web security testing <strong>accessible to everyone</strong> — from independent developers to enterprise security teams. We believe proactive vulnerability detection is the first line of defence against modern cyber threats.</p>
+      <div class="about-mission-points">
+        <div class="mission-point"><i class="fas fa-check-circle"></i> Free &amp; open-source forever</div>
+        <div class="mission-point"><i class="fas fa-check-circle"></i> No account required to scan</div>
+        <div class="mission-point"><i class="fas fa-check-circle"></i> OWASP-aligned detections</div>
+        <div class="mission-point"><i class="fas fa-check-circle"></i> AI-enhanced in future roadmap</div>
+      </div>
+    </div>
+
+    <div class="about-panel">
+      <div class="about-panel-header">
+        <div class="about-panel-icon blue"><i class="fas fa-layer-group"></i></div>
+        <div>
+          <h3>Technology Stack</h3>
+          <span class="about-panel-sub">What powers CyberScan AI</span>
+        </div>
+      </div>
+      <div class="tech-stack-list">
+        {% for tech, name, icon, col, note in [
+          ('Python 3.14',    'Core Engine',   'fab fa-python',        'blue',   'Runtime language'),
+          ('Flask',          'Web Framework', 'fas fa-server',        'green',  'HTTP server'),
+          ('Requests',       'HTTP Client',   'fas fa-paper-plane',   'green',  'Payload delivery'),
+          ('BeautifulSoup4', 'HTML Parser',   'fas fa-code',          'yellow', 'DOM analysis'),
+          ('Chart.js',       'Analytics',     'fas fa-chart-bar',     'blue',   'Visual reports'),
+          ('scikit-learn',   'AI Detection',  'fas fa-robot',         'red',    'Planned'),
+        ] %}
+        <div class="tech-item">
+          <div class="tech-icon-wrap {{ col }}"><i class="{{ icon }}"></i></div>
+          <div class="tech-meta">
+            <span class="tech-name">{{ tech }}</span>
+            <span class="tech-note">{{ name }}</span>
+          </div>
+          <span class="tech-badge">{{ note }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VULNERABILITY COVERAGE ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:32px;">
+    <div class="section-tag">Coverage</div>
+    <h2>What We Scan For</h2>
+    <p>Four active detection modules covering the most critical OWASP web vulnerabilities.</p>
+  </div>
+  <div class="about-vuln-grid">
+    {% for title, icon, col, desc, cwe, severity in [
+      ('SQL Injection',     'fas fa-database',             'red',    'Boolean-based and error-based SQL injection via crafted payloads in query parameters.', 'CWE-89',  'Critical'),
+      ('Reflected XSS',    'fas fa-code',                 'yellow', 'Script injection into URL parameters with response body verification.',                 'CWE-79',  'High'),
+      ('Security Headers', 'fas fa-shield-halved',        'blue',   'Missing CSP, X-Frame-Options, HSTS and other protective HTTP headers.',                 'CWE-693', 'Medium'),
+      ('Error Disclosure', 'fas fa-triangle-exclamation', 'green',  'Server error messages that leak database schema or internal path information.',          'CWE-209', 'High'),
+    ] %}
+    <div class="vuln-card vuln-{{ col }}">
+      <div class="vuln-card-top">
+        <div class="vuln-icon {{ col }}"><i class="{{ icon }}"></i></div>
+        <span class="vuln-sev sev-{{ col }}">{{ severity }}</span>
+      </div>
+      <h3 class="vuln-title">{{ title }}</h3>
+      <span class="vuln-cwe">{{ cwe }}</span>
+      <p class="vuln-desc">{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ══ CREATOR ══ -->
+  <div class="section-header" style="margin-top:64px;margin-bottom:32px;">
+    <div class="section-tag">Creator</div>
+    <h2>The Person Behind CyberScan AI</h2>
+  </div>
+
+  <!-- Creator — two-column layout -->
+  <div class="creator-layout">
+
+    <!-- LEFT: Avatar + identity panel -->
+    <div class="creator-left-panel">
+      <!-- Avatar -->
+      <div class="creator-avatar-wrap">
+        <div class="creator-avatar-glow-ring"></div>
+        <img class="creator-avatar-img"
+             src="https://github.com/Samarth1416.png"
+             alt="Samarth Dilip Ghole"
+             onerror="this.src='https://ui-avatars.com/api/?name=Samarth+Ghole&background=00ff88&color=060e1c&size=200'">
+        <div class="creator-active-dot"></div>
+      </div>
+
+      <!-- Name + handle -->
+      <h3 class="creator-name">Samarth Dilip Ghole</h3>
+      <span class="creator-handle"><i class="fab fa-github"></i> @Samarth1416</span>
+
+      <!-- Role pills -->
+      <div class="creator-roles-wrap">
+        <span class="role-pill cloud"><i class="fas fa-cloud"></i> Cloud Security</span>
+        <span class="role-pill hacker"><i class="fas fa-user-secret"></i> Ethical Hacker</span>
+        <span class="role-pill devops"><i class="fas fa-infinity"></i> DevOps</span>
+      </div>
+
+      <!-- Education -->
+      <div class="creator-edu">
+        <i class="fas fa-graduation-cap"></i>
+        <div>
+          <span class="edu-degree">B.Tech — CS &amp; Engineering (AI)</span>
+          <span class="edu-college">GH Raisoni Skill Tech University, Nagpur</span>
+        </div>
+      </div>
+
+      <!-- Location + time -->
+      <div class="creator-meta-items">
+        <div class="creator-meta-item"><i class="fas fa-map-marker-alt"></i> Nagpur, India</div>
+        <div class="creator-meta-item"><i class="fas fa-envelope"></i> s.g.ghole143@gmail.com</div>
+      </div>
+
+      <!-- Social buttons -->
+      <div class="creator-socials">
+        <a href="https://github.com/Samarth1416" target="_blank" class="social-btn github" title="GitHub">
+          <i class="fab fa-github"></i><span>GitHub</span>
+        </a>
+        <a href="https://facebook.com/Samarth" target="_blank" class="social-btn facebook" title="Facebook">
+          <i class="fab fa-facebook-f"></i><span>Facebook</span>
+        </a>
+        <a href="mailto:s.g.ghole143@gmail.com" class="social-btn email-btn" title="Email">
+          <i class="fas fa-envelope"></i><span>Email</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Bio + skills + stats + activity -->
+    <div class="creator-right-panel">
+
+      <!-- Bio card -->
+      <div class="creator-info-card">
+        <div class="creator-info-card-header">
+          <i class="fas fa-id-card" style="color:var(--green);"></i>
+          <span>About Me</span>
+        </div>
+        <p class="creator-bio-text">Hi 👋, I'm <strong>Samarth Ghole</strong> — a passionate Cloud Engineer, DevOps Engineer, and Penetration Tester.</p>
+        <p class="creator-bio-text">Currently building secure cloud infrastructures &amp; dismantling vulnerabilities. I'm passionate about improving automated threat analysis and integrating AI models into penetration testing tools.</p>
+
+        <div class="creator-focus-grid">
+          <div class="focus-item">
+            <i class="fas fa-hammer" style="color:var(--green);"></i>
+            <div>
+              <span class="focus-label">Currently Building</span>
+              <span class="focus-val">Secure Android apps &amp; pentest tools</span>
+            </div>
+          </div>
+          <div class="focus-item">
+            <i class="fas fa-book-open" style="color:var(--blue);"></i>
+            <div>
+              <span class="focus-label">Currently Learning</span>
+              <span class="focus-val">Cybersecurity, AI automation &amp; ethical hacking</span>
+            </div>
+          </div>
+          <div class="focus-item">
+            <i class="fas fa-handshake" style="color:var(--yellow);"></i>
+            <div>
+              <span class="focus-label">Open To Collaborate</span>
+              <span class="focus-val">Open-source cybersecurity &amp; AI projects</span>
+            </div>
+          </div>
+          <div class="focus-item">
+            <i class="fas fa-circle-question" style="color:var(--orange);"></i>
+            <div>
+              <span class="focus-label">Ask Me About</span>
+              <span class="focus-val">Cybersecurity, DevOps &amp; Android Development</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="creator-info-card" style="margin-top:14px;">
+        <div class="creator-info-card-header">
+          <i class="fas fa-code" style="color:var(--blue);"></i>
+          <span>Technical Skills</span>
+        </div>
+        <div class="creator-skills">
+          {% for skill, col in [
+            ('Python','green'), ('Flask','green'), ('Docker','blue'), ('Kubernetes','blue'),
+            ('AWS','orange'), ('Azure','blue'), ('GCP','yellow'), ('Bash','green'),
+            ('Burp Suite','red'), ('Metasploit','red'), ('Terraform','blue'), ('CI/CD','orange'),
+            ('Android Dev','green'), ('Penetration Testing','red'),
+          ] %}
+          <span class="skill-tag skill-{{ col }}">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- GitHub stats -->
+      <div class="creator-info-card" style="margin-top:14px;">
+        <div class="creator-info-card-header">
+          <i class="fab fa-github" style="color:var(--text-muted);"></i>
+          <span>GitHub Activity</span>
+          <a href="https://github.com/Samarth1416" target="_blank" class="view-all" style="margin-left:auto;">View Profile →</a>
+        </div>
+        <div class="github-stats-grid">
+          <img src="https://github-readme-stats.vercel.app/api?username=Samarth1416&show_icons=true&theme=transparent&title_color=00ff88&text_color=c8d6e5&icon_color=00d4ff&border_color=1a3a5c&hide_border=false&include_all_commits=true"
+               alt="GitHub Stats" class="github-stats-img" loading="lazy"
+               onerror="this.parentElement.classList.add('gh-stats-fallback')">
+          <img src="https://github-readme-streak-stats.herokuapp.com/?user=Samarth1416&theme=transparent&ring=00ff88&fire=ff4757&currStreakLabel=00d4ff&sideLabels=c8d6e5&currStreakNum=ffffff&sideNums=ffffff&dates=4e6578&border=1a3a5c"
+               alt="GitHub Streak" class="github-stats-img" loading="lazy"
+               onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <!-- CTA buttons row -->
+      <div class="creator-cta-row">
+        <a href="https://github.com/Samarth1416" target="_blank" class="creator-btn github">
+          <i class="fab fa-github"></i> GitHub Profile
+        </a>
+        <a href="https://github.com/Samarth1416/ai-web-vuln-scanner" target="_blank" class="creator-btn repo">
+          <i class="fas fa-code-branch"></i> View Repo
+        </a>
+        <a href="mailto:s.g.ghole143@gmail.com?subject=Collaboration" class="creator-btn email">
+          <i class="fas fa-paper-plane"></i> Let's Collaborate
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FEEDBACK ══ -->
+  <div class="feedback-banner">
+    <div class="feedback-banner-glow"></div>
+    <div class="feedback-left">
+      <div class="feedback-icon-v2"><i class="fas fa-comments"></i></div>
+      <div>
+        <h4>Feedback &amp; Suggestions</h4>
+        <p>Have an idea to improve CyberScan AI? Found a bug or want to collaborate on open-source cybersecurity?</p>
+      </div>
+    </div>
+    <a href="mailto:s.g.ghole143@gmail.com?subject=CyberScan%20AI%20Feedback" class="feedback-btn">
+      <i class="fas fa-paper-plane"></i> Send Feedback
+    </a>
+  </div>
+
+</div>
+
+<style>
+/* ─── Hero ─── */
+.about-hero { text-align:center; padding:56px 20px 48px; position:relative; overflow:hidden; margin-bottom:40px; }
+.about-hero-glow {
+  position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+  width:500px; height:300px; border-radius:50%;
+  background:radial-gradient(ellipse, rgba(0,255,136,0.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.about-hero-icon {
+  width:72px; height:72px; border-radius:20px; margin:0 auto 20px;
+  background:linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,212,255,0.15));
+  border:1px solid var(--border); display:grid; place-items:center;
+  font-size:32px; color:var(--green);
+  box-shadow:0 0 40px rgba(0,255,136,0.15);
+  animation:iconPulse 3s ease-in-out infinite;
+}
+.about-hero-title { font-size:clamp(28px,4vw,42px); font-weight:800; color:#fff; line-height:1.15; margin-bottom:16px; letter-spacing:-1px; }
+.about-hero-accent { color:var(--green); }
+.about-hero-sub { font-size:15px; color:var(--text-muted); line-height:1.7; max-width:540px; margin:0 auto 36px; }
+
+.about-stat-row {
+  display:inline-flex; align-items:center;
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+  padding:16px 32px; backdrop-filter:blur(12px); flex-wrap:wrap; justify-content:center;
+}
+.about-stat { text-align:center; padding:0 24px; }
+.about-stat-num { display:block; font-size:32px; font-weight:800; color:var(--green); font-family:var(--mono); line-height:1; }
+.about-stat-unit { font-size:20px; color:var(--green); font-weight:700; }
+.about-stat-label { display:block; font-size:11px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+.about-stat-divider { width:1px; height:40px; background:var(--border); }
+@media(max-width:600px){ .about-stat-row{gap:8px;} .about-stat-divider{display:none;} .about-stat{padding:8px 16px;} }
+
+/* ─── Two-column panels ─── */
+.about-two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
+@media(max-width:768px){ .about-two-col{grid-template-columns:1fr;} }
+
+.about-panel {
+  background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius);
+  padding:28px; backdrop-filter:blur(12px); transition:var(--transition);
+}
+.about-panel:hover { border-color:var(--border-h); box-shadow:0 8px 32px rgba(0,255,136,0.05); }
+.about-panel-header { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.about-panel-icon { width:46px; height:46px; border-radius:12px; flex-shrink:0; display:grid; place-items:center; font-size:20px; }
+.about-panel-icon.green { background:rgba(0,255,136,0.12); color:var(--green); border:1px solid rgba(0,255,136,0.2); }
+.about-panel-icon.blue  { background:rgba(0,212,255,0.12); color:var(--blue);  border:1px solid rgba(0,212,255,0.2); }
+.about-panel-header h3 { font-size:17px; font-weight:700; color:#fff; margin-bottom:2px; }
+.about-panel-sub { font-size:12px; color:var(--text-muted); }
+.about-panel-body { font-size:14px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; }
+.about-panel-body strong { color:#fff; }
+.about-mission-points { display:flex; flex-direction:column; gap:10px; }
+.mission-point { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text); }
+.mission-point i { color:var(--green); font-size:14px; flex-shrink:0; }
+
+.tech-stack-list { display:flex; flex-direction:column; gap:10px; }
+.tech-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 14px; border-radius:10px;
+  background:rgba(0,0,0,0.2); border:1px solid var(--border); transition:var(--transition);
+}
+.tech-item:hover { border-color:var(--border-h); }
+.tech-icon-wrap { width:36px; height:36px; border-radius:9px; flex-shrink:0; display:grid; place-items:center; font-size:16px; }
+.tech-icon-wrap.blue   { background:rgba(0,212,255,0.12); color:var(--blue); }
+.tech-icon-wrap.green  { background:rgba(0,255,136,0.12); color:var(--green); }
+.tech-icon-wrap.yellow { background:rgba(255,211,42,0.12); color:var(--yellow); }
+.tech-icon-wrap.red    { background:rgba(255,71,87,0.12);  color:var(--red); }
+.tech-meta { flex:1; }
+.tech-name { display:block; font-size:13px; font-weight:600; color:#fff; }
+.tech-note { display:block; font-size:11px; color:var(--text-muted); margin-top:1px; }
+.tech-badge {
+  font-size:10px; font-family:var(--mono); color:var(--text-muted);
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:4px; padding:2px 8px; white-space:nowrap;
+}
+
+/* ─── Vuln cards ─── */
+.about-vuln-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:900px){ .about-vuln-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:500px){ .about-vuln-grid{grid-template-columns:1fr;} }
+.vuln-card {
+  background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius);
+  padding:22px 20px; position:relative; overflow:hidden; transition:var(--transition);
+}
+.vuln-card:hover { transform:translateY(-4px); border-color:var(--border-h); }
+.vuln-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; }
+.vuln-card.vuln-red::after    { background:linear-gradient(90deg, var(--red), transparent); }
+.vuln-card.vuln-yellow::after { background:linear-gradient(90deg, var(--yellow), transparent); }
+.vuln-card.vuln-blue::after   { background:linear-gradient(90deg, var(--blue), transparent); }
+.vuln-card.vuln-green::after  { background:linear-gradient(90deg, var(--green), transparent); }
+.vuln-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.vuln-icon { width:44px; height:44px; border-radius:11px; display:grid; place-items:center; font-size:18px; }
+.vuln-icon.red    { background:rgba(255,71,87,0.12); color:var(--red); }
+.vuln-icon.yellow { background:rgba(255,211,42,0.12); color:var(--yellow); }
+.vuln-icon.blue   { background:rgba(0,212,255,0.12); color:var(--blue); }
+.vuln-icon.green  { background:rgba(0,255,136,0.12); color:var(--green); }
+.vuln-sev { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:3px 9px; border-radius:4px; font-family:var(--mono); }
+.sev-red    { background:rgba(255,71,87,0.15); color:var(--red); border:1px solid rgba(255,71,87,0.3); }
+.sev-yellow { background:rgba(255,211,42,0.12); color:var(--yellow); border:1px solid rgba(255,211,42,0.3); }
+.sev-blue   { background:rgba(0,212,255,0.12); color:var(--blue); border:1px solid rgba(0,212,255,0.3); }
+.sev-green  { background:rgba(0,255,136,0.1); color:var(--green); border:1px solid rgba(0,255,136,0.2); }
+.vuln-title { font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
+.vuln-cwe { display:inline-block; font-size:10px; font-family:var(--mono); color:var(--text-muted); background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:2px 7px; margin-bottom:10px; }
+.vuln-desc { font-size:12px; color:var(--text-muted); line-height:1.65; }
+
+/* ════════════════════════════
+   CREATOR SECTION - NEW
+   ════════════════════════════ */
+.creator-layout {
+  display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start;
+  margin-bottom:32px;
+}
+@media(max-width:900px){ .creator-layout{grid-template-columns:1fr;} }
+
+/* LEFT panel */
+.creator-left-panel {
+  background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+  padding:28px 22px; display:flex; flex-direction:column; align-items:center;
+  text-align:center; position:relative; overflow:hidden;
+  transition:var(--transition);
+}
+.creator-left-panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--green), var(--blue));
+}
+.creator-left-panel:hover { border-color:var(--border-h); }
+
+/* Avatar */
+.creator-avatar-wrap {
+  position:relative; width:130px; height:130px; margin-bottom:18px;
+}
+.creator-avatar-img {
+  width:130px; height:130px; border-radius:50%; object-fit:cover;
+  border:3px solid rgba(0,255,136,0.5);
+  box-shadow:0 0 0 6px rgba(0,255,136,0.08), 0 0 40px rgba(0,255,136,0.2);
+  display:block; position:relative; z-index:2;
+}
+.creator-avatar-glow-ring {
+  position:absolute; inset:-8px; border-radius:50%; z-index:1;
+  background:conic-gradient(var(--green) 0deg, var(--blue) 120deg, var(--green) 240deg, var(--blue) 360deg);
+  animation:spin 6s linear infinite;
+  mask:radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px));
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px));
+}
+.creator-active-dot {
+  position:absolute; bottom:8px; right:8px; z-index:3;
+  width:14px; height:14px; border-radius:50%;
+  background:var(--green); border:2px solid var(--bg2);
+  box-shadow:0 0 8px var(--green);
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.creator-name { font-size:20px; font-weight:800; color:#fff; margin-bottom:4px; }
+.creator-handle { font-size:13px; font-family:var(--mono); color:var(--text-muted); margin-bottom:16px; display:block; }
+.creator-handle i { margin-right:5px; opacity:0.6; }
+
+.creator-roles-wrap { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:18px; }
+.role-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+.role-pill i { font-size:10px; }
+.role-pill.cloud  { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.25); color:var(--blue); }
+.role-pill.hacker { background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.25); color:var(--green); }
+.role-pill.devops { background:rgba(255,150,0,0.1); border:1px solid rgba(255,150,0,0.25); color:var(--orange); }
+
+/* Education */
+.creator-edu {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.15);
+  border-radius:10px; padding:12px 14px; margin-bottom:14px;
+  text-align:left; width:100%;
+}
+.creator-edu i { color:var(--blue); font-size:16px; margin-top:2px; flex-shrink:0; }
+.edu-degree { display:block; font-size:12px; font-weight:600; color:#fff; margin-bottom:2px; }
+.edu-college { display:block; font-size:11px; color:var(--text-muted); line-height:1.4; }
+
+/* Meta items */
+.creator-meta-items { display:flex; flex-direction:column; gap:7px; width:100%; margin-bottom:18px; }
+.creator-meta-item { font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+.creator-meta-item i { color:var(--green); width:14px; text-align:center; }
+
+/* Social buttons */
+.creator-socials { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; width:100%; }
+.social-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:8px; font-size:12px; font-weight:600;
+  text-decoration:none; transition:var(--transition); flex:1; justify-content:center;
+}
+.social-btn.github { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; }
+.social-btn.github:hover { background:rgba(255,255,255,0.15); transform:translateY(-2px); }
+.social-btn.facebook { background:rgba(24,119,242,0.12); border:1px solid rgba(24,119,242,0.3); color:#4a90ea; }
+.social-btn.facebook:hover { background:rgba(24,119,242,0.2); transform:translateY(-2px); }
+.social-btn.email-btn { background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.25); color:var(--green); }
+.social-btn.email-btn:hover { background:rgba(0,255,136,0.18); transform:translateY(-2px); }
+
+/* RIGHT panel */
+.creator-right-panel { display:flex; flex-direction:column; gap:0; }
+
+.creator-info-card {
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+  padding:22px; transition:var(--transition);
+}
+.creator-info-card:hover { border-color:var(--border-h); }
+.creator-info-card-header {
+  display:flex; align-items:center; gap:10px;
+  font-size:14px; font-weight:700; color:#fff; margin-bottom:16px;
+  padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.creator-bio-text { font-size:13px; color:var(--text-muted); line-height:1.75; margin-bottom:10px; }
+.creator-bio-text strong { color:#fff; }
+
+/* Focus grid */
+.creator-focus-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+@media(max-width:600px){ .creator-focus-grid{grid-template-columns:1fr;} }
+.focus-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  background:rgba(0,0,0,0.2); border:1px solid var(--border);
+}
+.focus-item i { font-size:16px; margin-top:2px; flex-shrink:0; }
+.focus-label { display:block; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+.focus-val { display:block; font-size:12px; color:#fff; line-height:1.4; }
+
+/* Skills */
+.creator-skills { display:flex; flex-wrap:wrap; gap:8px; }
+.skill-tag {
+  padding:5px 12px; border-radius:6px; font-size:12px; font-weight:500;
+  transition:var(--transition); cursor:default;
+}
+.skill-tag.skill-green  { background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.2); color:var(--green); }
+.skill-tag.skill-blue   { background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2); color:var(--blue); }
+.skill-tag.skill-red    { background:rgba(255,71,87,0.08); border:1px solid rgba(255,71,87,0.2); color:var(--red); }
+.skill-tag.skill-orange { background:rgba(255,150,0,0.08); border:1px solid rgba(255,150,0,0.2); color:var(--orange); }
+.skill-tag.skill-yellow { background:rgba(255,211,42,0.08); border:1px solid rgba(255,211,42,0.2); color:var(--yellow); }
+.skill-tag:hover { transform:translateY(-2px); filter:brightness(1.2); }
+
+/* GitHub stats */
+.github-stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:700px){ .github-stats-grid{grid-template-columns:1fr;} }
+.github-stats-img { width:100%; border-radius:10px; border:1px solid var(--border); min-height:120px; background:rgba(0,0,0,0.2); }
+.gh-stats-fallback::after { content:'GitHub stats unavailable (network restricted)'; display:block; text-align:center; color:var(--text-muted); font-size:13px; padding:20px; }
+
+/* CTA row */
+.creator-cta-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.creator-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 20px; border-radius:10px; font-size:13px; font-weight:600;
+  text-decoration:none; transition:var(--transition);
+}
+.creator-btn.github { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff; }
+.creator-btn.github:hover { background:rgba(255,255,255,0.14); transform:translateY(-2px); }
+.creator-btn.email { background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.25); color:var(--green); }
+.creator-btn.email:hover { background:rgba(0,255,136,0.18); transform:translateY(-2px); }
+.creator-btn.repo { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:var(--blue); }
+.creator-btn.repo:hover { background:rgba(0,212,255,0.18); transform:translateY(-2px); }
+
+/* ─── Feedback Banner ─── */
+.feedback-banner {
+  position:relative; overflow:hidden;
+  background:linear-gradient(135deg, rgba(0,255,136,0.06), rgba(0,212,255,0.04));
+  border:1px solid var(--border); border-radius:18px;
+  padding:30px 36px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  margin-top:8px;
+}
+@media(max-width:640px){ .feedback-banner{flex-direction:column; text-align:center;} }
+.feedback-banner-glow {
+  position:absolute; right:-40px; top:-40px; width:240px; height:240px; border-radius:50%;
+  background:radial-gradient(ellipse, rgba(0,255,136,0.06), transparent 70%); pointer-events:none;
+}
+.feedback-left { display:flex; align-items:center; gap:20px; }
+@media(max-width:500px){ .feedback-left{flex-direction:column;} }
+.feedback-icon-v2 {
+  width:56px; height:56px; border-radius:14px; flex-shrink:0;
+  background:rgba(0,255,136,0.12); border:1px solid rgba(0,255,136,0.2);
+  display:grid; place-items:center; font-size:22px; color:var(--green);
+}
+.feedback-banner h4 { font-size:18px; font-weight:700; color:#fff; margin-bottom:6px; }
+.feedback-banner p { font-size:13px; color:var(--text-muted); line-height:1.6; max-width:420px; }
+.feedback-btn {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:13px 28px; border-radius:10px; font-size:14px; font-weight:700;
+  background:linear-gradient(135deg, var(--green), var(--green-dim));
+  color:var(--bg); text-decoration:none; white-space:nowrap;
+  box-shadow:0 4px 24px rgba(0,255,136,0.3); transition:var(--transition);
+}
+.feedback-btn:hover { transform:translateY(-2px); box-shadow:0 8px 36px rgba(0,255,136,0.5); color:var(--bg); }
+
+@media(max-width:700px){ .about-two-col{grid-template-columns:1fr!important;} }
+</style>
+
+<script>
+/* Animated counter */
+document.querySelectorAll('.about-stat-num').forEach(el => {
+  const target = +el.dataset.target, duration = 1400, step = target / (duration / 16);
+  let cur = 0;
+  const t = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = Math.floor(cur);
+    if (cur >= target) clearInterval(t);
+  }, 16);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Scan History — CyberScan AI{% endblock %}
+{% block page_title %}Scan History{% endblock %}
+
+{% block content %}
+
+<div class="history-header">
+  <div>
+    <h2><i class="fas fa-clock-rotate-left" style="color:var(--green);"></i> Scan History</h2>
+    <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">
+      {{ scans|length }} total scan record(s) for your account.
+    </p>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn-primary-cta" style="background:rgba(255,71,87,0.12);border-color:var(--red);color:var(--red);" onclick="clearHistoryPage()">
+      <i class="fas fa-trash"></i> Clear All
+    </button>
+    <a href="/scan" class="btn-primary-cta">
+      <i class="fas fa-plus"></i> New Scan
+    </a>
+  </div>
+</div>
+
+<!-- Search + filter bar -->
+<div class="filter-bar">
+  <div class="search-wrap">
+    <i class="fas fa-magnifying-glass"></i>
+    <input type="text" id="searchInput" placeholder="Filter by URL or vulnerability..." oninput="filterTable()"/>
+  </div>
+  <select id="sevFilter" onchange="filterTable()" class="sev-select">
+    <option value="">All Severities</option>
+    <option value="Critical">Critical</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+    <option value="Info">Info</option>
+  </select>
+</div>
+
+{% if scans %}
+<div class="table-card" style="margin-top:0;">
+  <div class="table-wrap">
+    <table class="data-table" id="historyTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Target URL</th>
+          <th>Vulnerability</th>
+          <th>Severity</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        {% for s in scans %}
+        <tr data-url="{{ s.url }}" data-vuln="{{ s.vulnerability }}" data-sev="{{ s.severity }}">
+          <td class="mono-cell" style="color:var(--text-muted);">{{ loop.index }}</td>
+          <td class="mono-cell">
+            <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer"
+               style="color:var(--blue);text-decoration:none;">
+              {{ s.url[:60] }}{% if s.url|length > 60 %}...{% endif %}
+              <i class="fas fa-arrow-up-right-from-square" style="font-size:11px;"></i>
+            </a>
+          </td>
+          <td>{{ s.vulnerability }}</td>
+          <td><span class="sev-badge sev-{{ s.severity|lower }}">{{ s.severity }}</span></td>
+          <td class="date-cell">{{ s.scan_date[:16] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="noResults" style="display:none;" class="empty-state">
+  <i class="fas fa-magnifying-glass fa-2x" style="color:var(--text-muted);margin-bottom:10px;display:block;"></i>
+  No matching records found.
+</div>
+
+{% else %}
+<div class="empty-state" style="margin-top:40px;">
+  <i class="fas fa-satellite-dish fa-2x" style="color:var(--text-muted);margin-bottom:12px;display:block;"></i>
+  No scans recorded yet. <a href="/scan">Run your first scan</a>
+</div>
+{% endif %}
+
+<script>
+function filterTable() {
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const sev = document.getElementById('sevFilter').value.toLowerCase();
+  const rows = document.querySelectorAll('#historyBody tr');
+  let visible = 0;
+  rows.forEach(row => {
+    const url  = row.dataset.url.toLowerCase();
+    const vuln = row.dataset.vuln.toLowerCase();
+    const rs   = row.dataset.sev.toLowerCase();
+    const matchQ   = !q   || url.includes(q) || vuln.includes(q);
+    const matchSev = !sev || rs === sev;
+    row.style.display = (matchQ && matchSev) ? '' : 'none';
+    if (matchQ && matchSev) visible++;
+  });
+  document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+}
+
+async function clearHistoryPage() {
+  if (!confirm('Permanently delete ALL scan history? This cannot be undone.')) return;
+  const r = await fetch('/api/clear-history', {method:'POST'});
+  const d = await r.json();
+  if (d.message) window.location.reload();
+}
+</script>
+{% endblock %}

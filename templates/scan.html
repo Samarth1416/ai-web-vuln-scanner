@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}New Scan — CyberScan AI{% endblock %}
+{% block page_title %}New Scan{% endblock %}
+
+{% block content %}
+
+{% if not streaming %}
+<!-- ═══ SCAN FORM ═══ -->
+<div class="scan-container">
+  <div class="scan-card">
+    <div class="scan-header">
+      <div class="scan-icon"><i class="fas fa-satellite-dish"></i></div>
+      <div>
+        <h2>Launch Vulnerability Scan</h2>
+        <p>Enter a target URL to begin automated security testing.</p>
+      </div>
+    </div>
+
+    <form method="POST" action="/scan/start" id="scanForm">
+      <div class="url-input-group">
+        <div class="url-prefix"><i class="fas fa-globe"></i></div>
+        <input type="url" name="url" id="urlInput"
+               placeholder="https://example.com/page?id=1"
+               required class="url-input"/>
+        <button type="submit" class="btn-scan" id="scanBtn">
+          <i class="fas fa-play"></i> Start Scan
+        </button>
+      </div>
+    </form>
+
+    <!-- Scan modules info -->
+    <div class="modules-grid">
+      <div class="module-pill"><i class="fas fa-database" style="color:var(--red);"></i> SQL Injection</div>
+      <div class="module-pill"><i class="fas fa-code" style="color:var(--yellow);"></i> XSS Detection</div>
+      <div class="module-pill"><i class="fas fa-arrow-right-arrow-left" style="color:var(--blue);"></i> Open Redirect</div>
+      <div class="module-pill"><i class="fas fa-shield-halved" style="color:var(--green);"></i> Security Headers</div>
+    </div>
+
+    <div class="scan-warning">
+      <i class="fas fa-triangle-exclamation"></i>
+      Only scan websites you own or have <strong>explicit written permission</strong> to test.
+      Unauthorised scanning may be illegal.
+    </div>
+  </div>
+</div>
+
+{% else %}
+<!-- ═══ TERMINAL PROGRESS ═══ -->
+<div class="scan-container">
+  <div class="scan-card">
+    <div class="scan-header">
+      <div class="scan-icon active"><i class="fas fa-satellite-dish fa-spin"></i></div>
+      <div>
+        <h2>Scanning Target</h2>
+        <p class="mono-text">{{ target_url }}</p>
+      </div>
+    </div>
+
+    <div class="terminal" id="terminal">
+      <div class="terminal-bar">
+        <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+        <span class="t-title">CyberScan AI — Terminal</span>
+      </div>
+      <div class="terminal-body" id="termBody">
+        <div class="t-line"><span class="t-prompt">root@cyberscan:~$</span> ./scan.sh {{ target_url }}</div>
+      </div>
+    </div>
+
+    <div class="progress-row">
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" id="progBar" style="width:0%"></div>
+      </div>
+      <span class="prog-pct" id="progPct">0%</span>
+    </div>
+
+    <div id="doneActions" style="display:none;margin-top:20px;text-align:center;">
+      <a id="resultsBtn" href="#" class="btn-scan" style="text-decoration:none;">
+        <i class="fas fa-file-shield"></i> View Full Report
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/scan_progress.js"></script>
+<script>
+  startScan('{{ token }}');
+</script>
+{% endif %}
+
+{% endblock %}

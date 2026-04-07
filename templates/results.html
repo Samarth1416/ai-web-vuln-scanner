@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block title %}Results — CyberScan AI{% endblock %}
+{% block page_title %}Scan Results{% endblock %}
+
+{% block content %}
+
+<div class="results-header">
+  <div>
+    <h2><i class="fas fa-file-shield" style="color:var(--green);"></i> Vulnerability Report</h2>
+    <div class="target-url-badge"><i class="fas fa-globe"></i> {{ target }}</div>
+  </div>
+  <div class="results-actions">
+    <a href="/report/{{ token }}/json" class="btn-export json">
+      <i class="fas fa-file-code"></i> Export JSON
+    </a>
+    <a href="/report/{{ token }}/pdf" class="btn-export pdf">
+      <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+    <a href="/scan" class="btn-export new">
+      <i class="fas fa-plus"></i> New Scan
+    </a>
+  </div>
+</div>
+
+<!-- Meta row -->
+<div class="meta-row">
+  <div class="meta-chip"><i class="fas fa-clock"></i> <span id="sts">--</span></div>
+  <div class="meta-chip"><i class="fas fa-bug"></i> {{ findings|length }} finding(s)</div>
+  <div class="meta-chip">
+    <i class="fas fa-shield-halved"></i>
+    {% if findings|length == 0 or (findings|length == 1 and 'No Vuln' in findings[0].vulnerability) %}
+      <span style="color:var(--green);">Clean</span>
+    {% else %}
+      <span style="color:var(--red);">Vulnerable</span>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Alert banner -->
+{% if findings %}
+<div class="result-alert danger">
+  <i class="fas fa-triangle-exclamation fa-lg"></i>
+  <div>
+    <strong>Vulnerabilities Detected!</strong> {{ findings|length }} security issue(s) found.
+    Review each finding and apply the recommended remediation immediately.
+  </div>
+</div>
+{% else %}
+<div class="result-alert success">
+  <i class="fas fa-circle-check fa-lg"></i>
+  <div>
+    <strong>No Vulnerabilities Detected.</strong> This automated scan found no common issues.
+    Always supplement with manual testing for production systems.
+  </div>
+</div>
+{% endif %}
+
+<!-- Findings list -->
+{% if findings %}
+<div class="findings-list">
+  {% for f in findings %}
+  <div class="finding-card sev-border-{{ f.severity|lower }}" style="animation-delay:{{ loop.index0 * 0.1 }}s;">
+    <div class="finding-head">
+      <div class="finding-icon sev-icon-{{ f.severity|lower }}">
+        {% if 'SQL' in f.vulnerability %}<i class="fas fa-database"></i>
+        {% elif 'XSS' in f.vulnerability %}<i class="fas fa-code"></i>
+        {% elif 'Redirect' in f.vulnerability %}<i class="fas fa-arrow-right-arrow-left"></i>
+        {% elif 'Header' in f.vulnerability %}<i class="fas fa-shield-halved"></i>
+        {% else %}<i class="fas fa-circle-info"></i>{% endif %}
+      </div>
+      <div class="finding-title-area">
+        <div class="finding-name">{{ f.vulnerability }}</div>
+        {% if f.parameter and f.parameter != 'HTTP Header' %}
+        <div class="finding-param"><i class="fas fa-tag"></i> Parameter: <code>{{ f.parameter }}</code></div>
+        {% endif %}
+      </div>
+      <span class="sev-badge sev-{{ f.severity|lower }}">{{ f.severity }}</span>
+    </div>
+
+    <div class="finding-details">
+      <p class="finding-desc">{{ f.details }}</p>
+
+      {% if f.evidence %}
+      <div class="evidence-box"><i class="fas fa-magnifying-glass"></i> <strong>Evidence:</strong> {{ f.evidence }}</div>
+      {% endif %}
+
+      {% if f.remediation %}
+      <details class="remediation-block">
+        <summary><i class="fas fa-wrench"></i> Remediation Steps</summary>
+        <p>{{ f.remediation }}</p>
+      </details>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ══ About This Scan + Flow ══════════════════════════ -->
+<div class="about-scan-card">
+  <div class="about-scan-header">
+    <div class="about-scan-icon"><i class="fas fa-circle-info"></i></div>
+    <div>
+      <h4>About This Scan</h4>
+      <p>How CyberScan AI analysed <span class="mono-text">{{ target }}</span></p>
+    </div>
+  </div>
+
+  <!-- Animated flow diagram -->
+  <div class="scan-flow">
+    <div class="flow-step" style="--d:0s">
+      <div class="flow-icon" style="background:rgba(0,212,255,0.12);color:var(--blue);">
+        <i class="fas fa-globe"></i>
+      </div>
+      <div class="flow-label">Target Input</div>
+      <div class="flow-desc">URL parsed &amp; validated. Protocol normalised.</div>
+    </div>
+    <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+    <div class="flow-step" style="--d:0.1s">
+      <div class="flow-icon" style="background:rgba(0,255,136,0.1);color:var(--green);">
+        <i class="fas fa-magnifying-glass"></i>
+      </div>
+      <div class="flow-label">Recon &amp; Crawl</div>
+      <div class="flow-desc">Headers fetched. Query parameters extracted for testing.</div>
+    </div>
+    <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+    <div class="flow-step" style="--d:0.2s">
+      <div class="flow-icon" style="background:rgba(255,150,0,0.12);color:var(--orange);">
+        <i class="fas fa-vials"></i>
+      </div>
+      <div class="flow-label">Module Testing</div>
+      <div class="flow-desc">SQLi, XSS, Open Redirect &amp; Header checks run in parallel.</div>
+    </div>
+    <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+    <div class="flow-step" style="--d:0.3s">
+      <div class="flow-icon" style="background:rgba(255,71,87,0.1);color:var(--red);">
+        <i class="fas fa-brain"></i>
+      </div>
+      <div class="flow-label">AI Classification</div>
+      <div class="flow-desc">Each finding is ranked Critical → Info by the severity engine.</div>
+    </div>
+    <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+
+    <div class="flow-step" style="--d:0.4s">
+      <div class="flow-icon" style="background:rgba(255,211,42,0.1);color:var(--yellow);">
+        <i class="fas fa-file-shield"></i>
+      </div>
+      <div class="flow-label">Report</div>
+      <div class="flow-desc">Findings sorted by severity. PDF &amp; JSON export available.</div>
+    </div>
+  </div>
+
+  <!-- Scanner modules breakdown -->
+  <div class="modules-breakdown">
+    <div class="module-info-card">
+      <div class="mi-icon" style="color:var(--red);"><i class="fas fa-database"></i></div>
+      <div class="mi-body">
+        <div class="mi-name">SQL Injection</div>
+        <div class="mi-desc">Tests GET parameters with error-based payloads. Detects MySQL, SQLite, Oracle and MSSQL signatures.</div>
+        <div class="mi-ref">CWE-89 · OWASP A03</div>
+      </div>
+    </div>
+    <div class="module-info-card">
+      <div class="mi-icon" style="color:var(--yellow);"><i class="fas fa-code"></i></div>
+      <div class="mi-body">
+        <div class="mi-name">Cross-Site Scripting (XSS)</div>
+        <div class="mi-desc">Injects script payloads into query parameters and checks if they reflect unescaped in the response.</div>
+        <div class="mi-ref">CWE-79 · OWASP A03</div>
+      </div>
+    </div>
+    <div class="module-info-card">
+      <div class="mi-icon" style="color:var(--blue);"><i class="fas fa-arrow-right-arrow-left"></i></div>
+      <div class="mi-body">
+        <div class="mi-name">Open Redirect</div>
+        <div class="mi-desc">Tests common redirect parameters (<code>url</code>, <code>next</code>, <code>redirect</code>) with external domain payloads.</div>
+        <div class="mi-ref">CWE-601 · OWASP A01</div>
+      </div>
+    </div>
+    <div class="module-info-card">
+      <div class="mi-icon" style="color:var(--green);"><i class="fas fa-shield-halved"></i></div>
+      <div class="mi-body">
+        <div class="mi-name">Security Headers</div>
+        <div class="mi-desc">Checks for missing protective headers (CSP, HSTS, X-Frame-Options) and leaking information headers.</div>
+        <div class="mi-ref">CWE-693 · OWASP A05</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scan-disclaimer">
+    <i class="fas fa-triangle-exclamation"></i>
+    This is an <strong>automated surface scan</strong>. It cannot detect logic flaws, authentication bypass,
+    business-logic vulnerabilities, or issues behind login walls. Always supplement with manual penetration testing.
+  </div>
+</div>
+
+<!-- Next steps box -->
+<div class="next-steps-card">
+  <h4><i class="fas fa-lightbulb" style="color:var(--yellow);"></i> Next Steps</h4>
+  <div class="next-steps-grid">
+    <div><i class="fas fa-arrow-right" style="color:var(--green);"></i> Run a full manual pentest to catch logic-based flaws.</div>
+    <div><i class="fas fa-arrow-right" style="color:var(--green);"></i> Verify security headers at <strong>securityheaders.com</strong>.</div>
+    <div><i class="fas fa-arrow-right" style="color:var(--green);"></i> Review <strong>OWASP Top 10</strong> for your technology stack.</div>
+    <div><i class="fas fa-arrow-right" style="color:var(--green);"></i> Schedule regular automated scans for continuous monitoring.</div>
+  </div>
+</div>
+
+<!-- ── Scan Notes Panel ────────────────────────────── -->
+<div class="notes-panel">
+  <div class="notes-panel-header" onclick="toggleNotes()">
+    <span><i class="fas fa-note-sticky" style="color:var(--yellow);"></i> Scan Notes</span>
+    <span style="color:var(--text-muted);font-size:13px;">
+      Attach private notes to this scan target &nbsp;<i class="fas fa-chevron-down" id="notesChevron"></i>
+    </span>
+  </div>
+  <div class="notes-panel-body" id="notesPanelBody">
+    <!-- Existing notes -->
+    <div id="existingNotes" style="margin-bottom:14px;"></div>
+    <!-- New note form -->
+    <div class="notes-form">
+      <textarea id="noteInput" class="notes-textarea" placeholder="Write a note about this scan…" rows="3"></textarea>
+      <button class="notes-save-btn" onclick="saveNote()">
+        <i class="fas fa-floppy-disk"></i> Save Note
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('sts').textContent =
+    new Date().toLocaleTimeString() + ' · ' + new Date().toLocaleDateString();
+
+  const SCAN_TARGET = {{ target | tojson }};
+  let notesOpen = false;
+
+  function toggleNotes() {
+    notesOpen = !notesOpen;
+    document.getElementById('notesPanelBody').style.display = notesOpen ? 'block' : 'none';
+    document.getElementById('notesChevron').className = notesOpen ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+    if (notesOpen) loadNotes();
+  }
+
+  async function loadNotes() {
+    const el = document.getElementById('existingNotes');
+    el.innerHTML = '<span style="color:var(--text-muted);font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Loading…</span>';
+    try {
+      const r = await fetch('/api/notes?url=' + encodeURIComponent(SCAN_TARGET));
+      const d = await r.json();
+      if (!d.notes || !d.notes.length) {
+        el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No notes yet for this target.</p>';
+        return;
+      }
+      el.innerHTML = d.notes.map(n => `
+        <div class="note-result-item" id="rn-${n.id}">
+          <div class="note-result-text">${n.note}</div>
+          <div class="note-result-meta">
+            <span>${n.created_at.slice(0,16)}</span>
+            <button onclick="deleteNote(${n.id},'rn-${n.id}')"><i class="fas fa-trash-can"></i></button>
+          </div>
+        </div>`).join('');
+    } catch(e) {
+      el.innerHTML = '<p style="color:var(--red);">Failed to load notes.</p>';
+    }
+  }
+
+  async function saveNote() {
+    const note = document.getElementById('noteInput').value.trim();
+    if (!note) return;
+    const r = await fetch('/api/notes', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({url: SCAN_TARGET, note})
+    });
+    if (r.ok) {
+      document.getElementById('noteInput').value = '';
+      loadNotes();
+    }
+  }
+
+  async function deleteNote(id, elId) {
+    await fetch('/api/notes/' + id, {method:'DELETE'});
+    const el = document.getElementById(elId);
+    if (el) el.remove();
+  }
+</script>
+{% endblock %}

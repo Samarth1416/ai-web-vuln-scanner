@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Scan Results — CyberScan AI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Header -->
+  <div class="result-header">
+    <div class="result-title">
+      <h2><i class="fas fa-shield-halved" style="color:var(--green);"></i> Scan Report</h2>
+      <div class="target-badge">
+        <i class="fas fa-globe"></i> {{ target }}
+      </div>
+    </div>
+    <a href="/" class="btn btn-outline"><i class="fas fa-plus"></i> New Scan</a>
+  </div>
+
+  <!-- Meta pills -->
+  <div class="result-meta">
+    <div class="meta-pill">
+      <i class="fas fa-clock" style="color:var(--green);"></i>
+      Scanned at: <span class="value" id="scanTime">--</span>
+    </div>
+    <div class="meta-pill">
+      <i class="fas fa-list-check" style="color:var(--blue);"></i>
+      Checks run: <span class="value">2</span>
+    </div>
+    <div class="meta-pill">
+      <i class="fas fa-bug" style="color:var(--red);"></i>
+      Issues found: <span class="value">{{ results | length }}</span>
+    </div>
+  </div>
+
+  <!-- Overall result banner -->
+  {% set has_vuln = results | selectattr('__contains__', 'defined') | list %}
+  {% if results | length == 1 and 'No vulnerabilities' in results[0] %}
+    <div class="alert alert-info" style="margin-bottom:28px;">
+      <i class="fas fa-circle-check" style="font-size:22px;flex-shrink:0;"></i>
+      <div>
+        <strong>All Clear!</strong> No commonly known vulnerabilities were detected for <code>{{ target }}</code>.
+        This does not guarantee the site is completely secure — always perform a full penetration test for production systems.
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-danger" style="margin-bottom:28px;">
+      <i class="fas fa-triangle-exclamation" style="font-size:22px;flex-shrink:0;"></i>
+      <div>
+        <strong>Vulnerabilities Detected!</strong> One or more security issues were found.
+        Review each finding below and apply the recommended fixes immediately.
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Vulnerability Cards -->
+  <div class="vuln-list">
+    {% for r in results %}
+
+      {% if 'SQL Injection' in r %}
+      <div class="vuln-card danger">
+        <div class="vuln-icon danger"><i class="fas fa-database"></i></div>
+        <div class="vuln-body">
+          <div class="vuln-title">SQL Injection Vulnerability Detected</div>
+          <div class="vuln-desc">
+            The target URL appears to be vulnerable to SQL Injection. An attacker could manipulate database queries
+            to read sensitive data, bypass authentication, modify records, or in some cases execute OS commands.
+          </div>
+          <div class="vuln-tags">
+            <span class="tag critical">Critical</span>
+            <span class="tag info">OWASP A03:2021</span>
+            <span class="tag info">CWE-89</span>
+          </div>
+          <details style="margin-top:14px;">
+            <summary style="cursor:pointer;color:var(--green);font-size:14px;font-weight:600;list-style:none;">
+              <i class="fas fa-chevron-down"></i> Remediation Steps
+            </summary>
+            <ul style="margin-top:10px;font-size:13px;color:var(--text-muted);line-height:2;padding-left:20px;">
+              <li>Use <strong>parameterised queries / prepared statements</strong> — never concatenate user input into SQL strings.</li>
+              <li>Apply <strong>server-side input validation</strong> and use an ORM where possible.</li>
+              <li>Implement the <strong>principle of least privilege</strong> on database accounts.</li>
+              <li>Enable a <strong>Web Application Firewall (WAF)</strong> as a defence-in-depth layer.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+      {% elif 'XSS' in r %}
+      <div class="vuln-card warning">
+        <div class="vuln-icon warning"><i class="fas fa-code"></i></div>
+        <div class="vuln-body">
+          <div class="vuln-title">Cross-Site Scripting (XSS) Vulnerability Detected</div>
+          <div class="vuln-desc">
+            A reflected XSS payload was found in the server response. Attackers can inject malicious scripts
+            that execute in victims' browsers, leading to session hijacking, credential theft, or drive-by malware.
+          </div>
+          <div class="vuln-tags">
+            <span class="tag high">High</span>
+            <span class="tag info">OWASP A03:2021</span>
+            <span class="tag info">CWE-79</span>
+          </div>
+          <details style="margin-top:14px;">
+            <summary style="cursor:pointer;color:var(--yellow);font-size:14px;font-weight:600;list-style:none;">
+              <i class="fas fa-chevron-down"></i> Remediation Steps
+            </summary>
+            <ul style="margin-top:10px;font-size:13px;color:var(--text-muted);line-height:2;padding-left:20px;">
+              <li>Encode all user-supplied data before rendering it in HTML (<code>htmlspecialchars</code>, <code>escape()</code>).</li>
+              <li>Implement a strict <strong>Content Security Policy (CSP)</strong> header.</li>
+              <li>Use modern frameworks that auto-escape output (React, Angular, Vue).</li>
+              <li>Validate and sanitise all input server-side using an allowlist approach.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+      {% else %}
+      <div class="vuln-card safe">
+        <div class="vuln-icon safe"><i class="fas fa-circle-check"></i></div>
+        <div class="vuln-body">
+          <div class="vuln-title">{{ r }}</div>
+          <div class="vuln-desc">
+            No SQL Injection or XSS vulnerabilities were detected during this scan.
+            Remember to also test for insecure headers, open redirects, CSRF, and authentication flaws.
+          </div>
+          <div class="vuln-tags">
+            <span class="tag safe">Clean</span>
+            <span class="tag info">Partial Scan</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+  <!-- Scan Tips -->
+  <div class="card" style="margin-top:36px;">
+    <h3 style="color:#fff;margin-bottom:16px;"><i class="fas fa-lightbulb" style="color:var(--yellow);"></i> Next Steps</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.7;">
+        <i class="fas fa-arrow-right" style="color:var(--green);margin-right:6px;"></i>
+        Run a full <strong style="color:#fff;">manual penetration test</strong> to catch logic-based flaws.
+      </div>
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.7;">
+        <i class="fas fa-arrow-right" style="color:var(--green);margin-right:6px;"></i>
+        Check HTTP response <strong style="color:#fff;">security headers</strong> with SecurityHeaders.com.
+      </div>
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.7;">
+        <i class="fas fa-arrow-right" style="color:var(--green);margin-right:6px;"></i>
+        Review the <strong style="color:#fff;">OWASP Top 10</strong> checklist for your tech stack.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Set scan timestamp
+  const now = new Date();
+  document.getElementById('scanTime').textContent = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString();
+</script>
+{% endblock %}
